@@ -1,0 +1,19 @@
+# Логи
+*.log
+vscode-cycle.log
+
+# Конфиг (каждый пользователь будет создавать свой)
+vscode-cycle.config.json
+
+# Изолированный профиль VS Code (генерируется автоматически)
+.vscode-cycle-isolated/
+
+# Системные файлы Windows
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

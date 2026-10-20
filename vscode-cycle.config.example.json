@@ -1,0 +1,15 @@
+{
+  "Enabled": true,
+  "StartHour": 9,
+  "StartMinute": 0,
+  "EndHour": 18,
+  "EndMinute": 0,
+  "LunchStartHour": 12,
+  "LunchStartMinute": 30,
+  "LunchEndHour": 13,
+  "LunchEndMinute": 30,
+  "WorkDays": [1, 2, 3, 4, 5],
+  "IntervalMinutes": 15,
+  "CycleOpenDurationSeconds": 30,
+  "CycleCloseDurationSeconds": 30
+}

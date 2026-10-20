@@ -168,9 +168,9 @@ function Register-Activity {
     }
 }
 
-# Таймер для постоянной регистрации активности (каждые 30 секунд)
+# Таймер для постоянной регистрации активности (каждые 10 секунд - чаще для надежности Manic Time)
 $activityTimer = New-Object System.Windows.Forms.Timer
-$activityTimer.Interval = 30000 # 30 секунд
+$activityTimer.Interval = 10000 # 10 секунд (увеличено с 30 для более частой регистрации)
 $activityTimer.Add_Tick({ Register-Activity })
 $activityTimer.Start()
 

@@ -14,3 +14,6 @@ End Sub
 RegisterActivity()
 
 objShell.Run "powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File ""C:\Users\RoboSoft\Scripts\vscode-cycle-tray.ps1""", 0, False
+
+' Закрыть VBS процесс после запуска PowerShell (избегаем видимых окон)
+WScript.Quit(0)

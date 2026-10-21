@@ -142,27 +142,50 @@ $pinvokeCode = @'
 [DllImport("user32.dll", SetLastError = true)]
 public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, IntPtr dwExtraInfo);
 
+[DllImport("user32.dll", SetLastError = true)]
+public static extern bool keybd_event(byte bVk, byte bScan, uint dwFlags, IntPtr dwExtraInfo);
+
 public const uint MOUSEEVENTF_MOVE = 0x0001;
+public const uint MOUSEEVENTF_WHEEL = 0x0800;
+public const uint KEYEVENTF_KEYUP = 2;
 '@
 
 try {
     Add-Type -MemberDefinition $pinvokeCode -Name "NativeMethods" -Namespace "Win32"
-    $mouseEventMethodExists = $true
+    $nativeMethodsExists = $true
 } catch {
-    $mouseEventMethodExists = $false
+    $nativeMethodsExists = $false
 }
 
 function Register-Activity {
-    if ($mouseEventMethodExists) {
+    if ($nativeMethodsExists) {
         try {
-            # Микродвижение мыши на 1 пиксель вверх и обратно (невидимо, но регистрируется как активность)
-            [Win32.NativeMethods]::mouse_event(1, 1, 1, 0, [IntPtr]::Zero)
-            Start-Sleep -Milliseconds 50
-            [Win32.NativeMethods]::mouse_event(1, 4294967295, 4294967295, 0, [IntPtr]::Zero) # -1 as uint32
+            # Случайный выбор типа активности для реалистичности
+            $activityType = Get-Random -Minimum 0 -Maximum 3
+
+            switch ($activityType) {
+                0 {
+                    # Микродвижение мыши в разные стороны
+                    $moveX = Get-Random -Minimum -5 -Maximum 5
+                    $moveY = Get-Random -Minimum -5 -Maximum 5
+                    [Win32.NativeMethods]::mouse_event(1, $moveX, $moveY, 0, [IntPtr]::Zero)
+                }
+                1 {
+                    # Имитация скролла колёсика мыши (вверх или вниз)
+                    $scrollDir = if ((Get-Random -Minimum 0 -Maximum 2) -eq 0) { 1 } else { -1 }
+                    [Win32.NativeMethods]::mouse_event(0x0800, 0, 0, 120 * $scrollDir, [IntPtr]::Zero)
+                }
+                2 {
+                    # Нажатие нейтральной клавиши (Shift - самая безопасная)
+                    [Win32.NativeMethods]::keybd_event(0x10, 0, 0, [IntPtr]::Zero) # Shift down
+                    Start-Sleep -Milliseconds 10
+                    [Win32.NativeMethods]::keybd_event(0x10, 0, 2, [IntPtr]::Zero) # Shift up
+                }
+            }
         } catch {
-            # Fallback: если не сработало, пробуем SendKeys
+            # Fallback: нейтральное нажатие клавиши
             try {
-                [System.Windows.Forms.SendKeys]::SendWait("{SCROLLLOCK}")
+                [System.Windows.Forms.SendKeys]::SendWait("{SHIFT}")
             } catch { }
         }
     }

@@ -383,7 +383,10 @@ if ($isolatedPids.Count -eq 0) {
     Write-Log "VS Code window is hidden - keys are not sent (they would reach another window)"
 }
 Simulate-CodeTyping -TargetProcessIds $isolatedPids
-Start-Sleep -Seconds 3
+
+# Show VS Code for 2 minutes for Manic Time screenshots
+Write-Log "VS Code visible for 2 minutes..."
+Start-Sleep -Seconds 120
 
 # 2. Planfix
 Write-Log ""
@@ -403,7 +406,10 @@ Start-Sleep -Seconds 4
 Write-Log ""
 Write-Log "PHASE 4: Terminal Git Operations"
 Open-Terminal
-Start-Sleep -Seconds 3
+
+# Show Terminal for 2 minutes for Manic Time screenshots
+Write-Log "Terminal visible for 2 minutes..."
+Start-Sleep -Seconds 120
 
 # Cleanup
 Write-Log ""

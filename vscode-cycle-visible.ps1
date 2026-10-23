@@ -89,8 +89,8 @@ Write-Host "╔═════════════════════�
 Write-Host "║   ✨ VISIBLE PHANTOM ACTIVITY - For Manic Time Capture    ║" -ForegroundColor Green
 Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Green
 
-# Phase 1: VS Code (VISIBLE)
-Write-Log "PHASE 1: VS Code Development (VISIBLE)"
+# Phase 1: VS Code (VISIBLE for 2 minutes)
+Write-Log "PHASE 1: VS Code Development (VISIBLE for 2 minutes)"
 Write-Host ""
 Write-Host "1. Opening VS Code..." -ForegroundColor Yellow
 Write-Log "Code.exe path: $codeExe"
@@ -100,7 +100,7 @@ if (Test-Path $codeExe) {
     try {
         Start-Process -FilePath $codeExe -ArgumentList $projectPath -WindowStyle Normal
         Write-Log "✅ VS Code launched successfully"
-        Write-Host "   ✅ VS Code launching..." -ForegroundColor Green
+        Write-Host "   ✅ VS Code launching (will show for 2 min)..." -ForegroundColor Green
     } catch {
         Write-Log "❌ Error launching VS Code: $_"
         Write-Host "   ❌ Error launching VS Code: $_" -ForegroundColor Red
@@ -110,7 +110,9 @@ if (Test-Path $codeExe) {
     Write-Host "   ❌ Code.exe not found" -ForegroundColor Red
 }
 
-Start-Sleep -Seconds 5
+# Show VS Code for 2 minutes (120 seconds)
+Start-Sleep -Seconds 120
+Write-Log "VS Code visible for 2 minutes complete"
 
 # Phase 2: Planfix (VISIBLE for 2 minutes then close)
 Write-Log ""
@@ -154,9 +156,9 @@ Write-Log "Closing GitLab tab after 2 minutes..."
 [System.Windows.Forms.SendKeys]::SendWait("^w")
 Start-Sleep -Milliseconds 500
 
-# Phase 4: Terminal (VISIBLE)
+# Phase 4: Terminal (VISIBLE for 2 minutes)
 Write-Log ""
-Write-Log "PHASE 4: PowerShell Terminal (VISIBLE)"
+Write-Log "PHASE 4: PowerShell Terminal (VISIBLE for 2 minutes)"
 Write-Host ""
 Write-Host "4. Opening Terminal..." -ForegroundColor Yellow
 
@@ -171,13 +173,15 @@ Write-Host 'Ready for commands...' -ForegroundColor Cyan
 
     Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command", $terminalCmd -WindowStyle Normal
     Write-Log "✅ Terminal opened successfully"
-    Write-Host "   ✅ Terminal launching..." -ForegroundColor Green
+    Write-Host "   ✅ Terminal launching (will show for 2 min)..." -ForegroundColor Green
 } catch {
     Write-Log "❌ Error opening Terminal: $_"
     Write-Host "   ❌ Error opening Terminal" -ForegroundColor Red
 }
 
-Start-Sleep -Seconds 5
+# Show Terminal for 2 minutes (120 seconds)
+Start-Sleep -Seconds 120
+Write-Log "Terminal visible for 2 minutes complete"
 
 Write-Log ""
 Write-Log "═════════════════════════════════════════════════════════════════"

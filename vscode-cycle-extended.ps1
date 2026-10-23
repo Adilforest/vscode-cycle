@@ -434,17 +434,12 @@ try {
         }
     }
 
-    # Auto-close browser if memory gets too high (over 4GB)
+    # Memory monitoring only - NEVER close browser (protects farm profiles 1-11)
     $roundedTotal = [math]::Round($totalMemory, 2)
-    if ($totalMemory -gt 4000) {
-        Write-Log "❌ Browser memory VERY HIGH ($roundedTotal MB) - closing browser to prevent system slowdown"
-        foreach ($browser in $browsers) {
-            Get-Process -Name $browser -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-        }
-        Write-Log "✅ Browser closed to free memory"
-        Start-Sleep -Seconds 2
+    if ($totalMemory -gt 3000) {
+        Write-Log "⚠️  Browser memory high ($roundedTotal MB) - farm profiles 1-11 protected, monitor manually if needed"
     } elseif ($totalMemory -gt 1500) {
-        Write-Log "⚠️  Browser memory high ($roundedTotal MB) - will close if exceeds 4GB"
+        Write-Log "📊 Browser memory: $roundedTotal MB"
     } else {
         Write-Log "✅ Browser memory normal ($roundedTotal MB)."
     }

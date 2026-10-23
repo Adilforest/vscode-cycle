@@ -129,10 +129,8 @@ try {
 
 Start-Sleep -Seconds 4
 
-# Close Planfix tab after viewing
-Write-Log "Closing Planfix tab..."
-[System.Windows.Forms.SendKeys]::SendWait("^w")
-Start-Sleep -Milliseconds 500
+# Note: Planfix tab kept open - farm profiles 1-11 protected
+Write-Log "✅ Planfix tab kept open (farm profiles protected)"
 
 # Phase 3: GitLab (VISIBLE in browser)
 Write-Log ""
@@ -151,10 +149,8 @@ try {
 
 Start-Sleep -Seconds 4
 
-# Close GitLab tab after viewing
-Write-Log "Closing GitLab tab..."
-[System.Windows.Forms.SendKeys]::SendWait("^w")
-Start-Sleep -Milliseconds 500
+# Note: GitLab tab kept open - farm profiles 1-11 protected
+Write-Log "✅ GitLab tab kept open (farm profiles protected)"
 
 # Phase 4: Terminal (VISIBLE)
 Write-Log ""

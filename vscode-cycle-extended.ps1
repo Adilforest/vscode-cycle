@@ -186,6 +186,11 @@ function Open-Planfix {
         }
 
         Write-Log "Planfix phantom actions completed"
+
+        # Close Planfix tab after viewing
+        Write-Log "Closing Planfix tab..."
+        [System.Windows.Forms.SendKeys]::SendWait("^w")
+        Start-Sleep -Milliseconds 500
     } catch {
         Write-Log "WARNING: Planfix simulation failed: $_"
     }
@@ -208,6 +213,11 @@ function Open-GitLab {
         }
 
         Write-Log "GitLab phantom actions completed"
+
+        # Close GitLab tab after viewing
+        Write-Log "Closing GitLab tab..."
+        [System.Windows.Forms.SendKeys]::SendWait("^w")
+        Start-Sleep -Milliseconds 500
     } catch {
         Write-Log "WARNING: GitLab simulation failed: $_"
     }
@@ -423,19 +433,12 @@ try {
         }
     }
 
-    # If total browser memory exceeds 800MB, close excess processes
+    # Memory monitoring only - NO auto-closing to protect other profiles
     if ($totalMemory -gt 800) {
-        Write-Log "⚠️  Browser memory high ($([math]::Round($totalMemory, 2)) MB). Closing excess instances..."
-        foreach ($browser in $browsers) {
-            $procs = Get-Process -Name $browser -ErrorAction SilentlyContinue
-            if ($procs -and $procs.Count -gt 1) {
-                # Close all but the first instance
-                $procs | Select-Object -Skip 1 | Stop-Process -Force -ErrorAction SilentlyContinue
-                Write-Log "  Closed excess $browser processes"
-            }
-        }
+        Write-Log "⚠️  Browser memory high ($([math]::Round($totalMemory, 2)) MB) - consider closing some tabs manually"
+        Write-Log "      Note: Not auto-closing to protect other profiles and Chrome settings"
     } else {
-        Write-Log "✅ Browser memory normal ($([math]::Round($totalMemory, 2)) MB). Keeping tabs open."
+        Write-Log "✅ Browser memory normal ($([math]::Round($totalMemory, 2)) MB)."
     }
 } catch {
     Write-Log "Memory check skipped: $_"

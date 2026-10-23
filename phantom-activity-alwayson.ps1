@@ -189,15 +189,10 @@ while ($true) {
                 }
             }
 
-            # If total browser memory exceeds 800MB, close excess processes
+            # Memory monitoring only - NO auto-closing to protect other profiles
             if ($totalMemory -gt 800) {
-                Write-Log "[MEM] Browser memory high ($([math]::Round($totalMemory, 2)) MB) - closing excess instances" "Yellow"
-                foreach ($browser in $browsers) {
-                    $procs = Get-Process -Name $browser -ErrorAction SilentlyContinue
-                    if ($procs -and $procs.Count -gt 1) {
-                        $procs | Select-Object -Skip 1 | Stop-Process -Force -ErrorAction SilentlyContinue
-                    }
-                }
+                Write-Log "[MEM] Browser memory high ($([math]::Round($totalMemory, 2)) MB) - close tabs manually if needed" "Yellow"
+                Write-Log "[MEM] Not auto-closing to protect other Chrome profiles" "DarkGray"
             }
         } catch {
             # Ignore memory check errors

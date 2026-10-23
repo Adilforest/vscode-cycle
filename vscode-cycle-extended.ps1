@@ -226,7 +226,7 @@ function Open-GitLab {
 function Open-Terminal {
     try {
         Write-Log "Opening PowerShell Terminal..."
-        $terminalProcess = Start-Process -FilePath "pwsh.exe" -PassThru -NoNewWindow -WindowStyle Normal
+        $terminalProcess = Start-Process -FilePath "powershell.exe" -PassThru -WindowStyle Normal
         Start-Sleep -Seconds 2
 
         Write-Log "Simulating Git operations in terminal..."
@@ -429,16 +429,24 @@ try {
         if ($procs) {
             $memoryMB = ($procs | Measure-Object -Property WorkingSet -Sum).Sum / 1MB
             $totalMemory += $memoryMB
-            Write-Log "  $browser: $([math]::Round($memoryMB, 2)) MB"
+            $roundedMemory = [math]::Round($memoryMB, 2)
+            Write-Log "  $browser : $roundedMemory MB"
         }
     }
 
-    # Memory monitoring only - NO auto-closing to protect other profiles
-    if ($totalMemory -gt 800) {
-        Write-Log "⚠️  Browser memory high ($([math]::Round($totalMemory, 2)) MB) - consider closing some tabs manually"
-        Write-Log "      Note: Not auto-closing to protect other profiles and Chrome settings"
+    # Auto-close browser if memory gets too high (over 4GB)
+    $roundedTotal = [math]::Round($totalMemory, 2)
+    if ($totalMemory -gt 4000) {
+        Write-Log "❌ Browser memory VERY HIGH ($roundedTotal MB) - closing browser to prevent system slowdown"
+        foreach ($browser in $browsers) {
+            Get-Process -Name $browser -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+        }
+        Write-Log "✅ Browser closed to free memory"
+        Start-Sleep -Seconds 2
+    } elseif ($totalMemory -gt 1500) {
+        Write-Log "⚠️  Browser memory high ($roundedTotal MB) - will close if exceeds 4GB"
     } else {
-        Write-Log "✅ Browser memory normal ($([math]::Round($totalMemory, 2)) MB)."
+        Write-Log "✅ Browser memory normal ($roundedTotal MB)."
     }
 } catch {
     Write-Log "Memory check skipped: $_"

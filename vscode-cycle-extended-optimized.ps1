@@ -59,8 +59,8 @@ $openApps = @()
 while ((Get-Date) -lt $endTime) {
     $now = Get-Date
 
-    # Every 5 seconds: perform action
-    if (($now - $lastActionTime).TotalSeconds -ge 5) {
+    # Every 2-3 seconds: perform action (more frequent for Manic Time)
+    if (($now - $lastActionTime).TotalSeconds -ge 2) {
         Write-Log "  Action: mouse + keyboard"
         Simulate-Action
         $lastActionTime = $now

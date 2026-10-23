@@ -566,3 +566,19 @@ try {
 } catch {
     Write-Log "Memory check skipped: $_"
 }
+
+# CLEANUP: Close VS Code for next cycle
+Write-Log ""
+Write-Log "═════════════════════════════════════════════════════════════════"
+Write-Log "🧹 CLEANUP: Closing VS Code"
+Write-Log "═════════════════════════════════════════════════════════════════"
+Write-Log ""
+
+Write-Log "Closing VS Code..."
+Get-Process "Code" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+Start-Sleep -Seconds 1
+
+Write-Log ""
+Write-Log "✅ CYCLE CLEANUP COMPLETE - VS Code closed"
+Write-Log ""

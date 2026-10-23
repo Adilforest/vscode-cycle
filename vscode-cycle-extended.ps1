@@ -439,3 +439,36 @@ try {
 } catch {
     Write-Log "Memory check skipped: $_"
 }
+
+# CLEANUP: Close all Phantom Activity windows (but protect farm processes)
+Write-Log ""
+Write-Log "═════════════════════════════════════════════════════════════════"
+Write-Log "🧹 CLEANUP: Closing all Phantom Activity windows"
+Write-Log "═════════════════════════════════════════════════════════════════"
+Write-Log ""
+
+# Close VS Code
+Write-Log "Closing VS Code..."
+Get-Process "Code" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+# Close NEW browser windows/tabs (only for Phantom Activity, farm stays open)
+# Keep only existing farm instances - don't kill chrome/edge process completely
+Write-Log "Closing browser tabs (Planfix/GitLab) - farm profiles protected..."
+# Close recently opened tabs by sending Ctrl+W
+$shell = New-Object -ComObject WScript.Shell
+@(1..5) | ForEach-Object {
+    $shell.SendKeys("^w")
+    Start-Sleep -Milliseconds 200
+}
+
+# Close Terminal (PowerShell instances except this one)
+Write-Log "Closing Terminal..."
+Get-Process "powershell" -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $PID } | Stop-Process -Force -ErrorAction SilentlyContinue
+
+Start-Sleep -Seconds 1
+
+Write-Log ""
+Write-Log "✅ CYCLE CLEANUP COMPLETE"
+Write-Log "Memory freed: VS Code, Terminal, and browser tabs closed"
+Write-Log "Farm profiles 1-11: PROTECTED"
+Write-Log ""

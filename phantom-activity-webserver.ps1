@@ -243,6 +243,9 @@ try {
                 "/" {
                     $response.ContentType = "text/html; charset=utf-8"
                     $response.StatusCode = 200
+                    $response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate")
+                    $response.Headers.Add("Pragma", "no-cache")
+                    $response.Headers.Add("Expires", "0")
 
                     $webPagePath = "$scriptsDir\phantom-activity-web.html"
                     if (Test-Path $webPagePath) {

@@ -20,172 +20,18 @@ $gitlabUrl = "https://gitlab.robosoft.kz/robosoft/situation-centre-arm-backend"
 function Write-Log {
     param([string]$Message)
     $line = "{0}  {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Message
-    Add-Content -Path $logFile -Value $line
+    Add-Content -Path $logFile -Value $line -ErrorAction SilentlyContinue
 }
 
 function Simulate-MouseMovement {
-    # Simulates mouse movement to show activity
-    $x = [System.Windows.Forms.Cursor]::Position.X
-    $y = [System.Windows.Forms.Cursor]::Position.Y
-
-    [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point($x + 5, $y + 5)
-    Start-Sleep -Milliseconds 100
-    [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point($x, $y)
-}
-
-function Simulate-CodeTyping {
     try {
-        Add-Type -MemberDefinition @'
-[DllImport("user32.dll", SetLastError = true)]
-public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, IntPtr dwExtraInfo);
-
-public const uint KEYEVENTF_KEYUP = 2;
-'@ -Name "KeyboardSimulator" -Namespace "Win32" -ErrorAction Stop
-
-        Write-Log "Starting code editing simulation (VISIBLE)..."
-
-        # Simulate code editing with visible actions
-        $actions = @(
-            @{ Desc = "Ctrl+Home (beginning)"; Keys = @(0x11, 0x24) },
-            @{ Desc = "Page Down"; Keys = @(0x22) },
-            @{ Desc = "Ctrl+F (find)"; Keys = @(0x11, 0x46) },
-            @{ Desc = "Type: views"; Text = "views" },
-            @{ Desc = "Escape"; Keys = @(0x1B) },
-            @{ Desc = "Ctrl+End (end)"; Keys = @(0x11, 0x23) },
-            @{ Desc = "Ctrl+S (save)"; Keys = @(0x11, 0x53) }
-        )
-
-        foreach ($action in $actions) {
-            Write-Log "  Action: $($action.Desc)"
-            Simulate-MouseMovement
-
-            if ($action.Text) {
-                foreach ($char in $action.Text.ToCharArray()) {
-                    [System.Windows.Forms.SendKeys]::SendWait($char)
-                    Start-Sleep -Milliseconds (Get-Random -Minimum 80 -Maximum 150)
-                }
-            } else {
-                # Handle hotkey
-                if ($action.Keys.Count -eq 2) {
-                    $mod = $action.Keys[0]
-                    $key = $action.Keys[1]
-                    [Win32.KeyboardSimulator]::keybd_event($mod, 0, 0, [IntPtr]::Zero)
-                    Start-Sleep -Milliseconds 30
-                    [Win32.KeyboardSimulator]::keybd_event($key, 0, 0, [IntPtr]::Zero)
-                    Start-Sleep -Milliseconds 30
-                    [Win32.KeyboardSimulator]::keybd_event($key, 0, 2, [IntPtr]::Zero)
-                    Start-Sleep -Milliseconds 30
-                    [Win32.KeyboardSimulator]::keybd_event($mod, 0, 2, [IntPtr]::Zero)
-                } else {
-                    [Win32.KeyboardSimulator]::keybd_event($action.Keys[0], 0, 0, [IntPtr]::Zero)
-                    Start-Sleep -Milliseconds 30
-                    [Win32.KeyboardSimulator]::keybd_event($action.Keys[0], 0, 2, [IntPtr]::Zero)
-                }
-            }
-            Start-Sleep -Milliseconds (Get-Random -Minimum 300 -Maximum 600)
-        }
-
-        Write-Log "Code editing completed"
+        $x = [System.Windows.Forms.Cursor]::Position.X
+        $y = [System.Windows.Forms.Cursor]::Position.Y
+        [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point($x + 5, $y + 5)
+        Start-Sleep -Milliseconds 100
+        [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point($x, $y)
     } catch {
-        Write-Log "WARNING: Code simulation failed: $_"
-    }
-}
-
-function Open-Planfix-Visible {
-    try {
-        Write-Log "Opening Planfix (VISIBLE for Manic Time)..."
-        Start-Process $planfixUrl
-        Start-Sleep -Seconds 4
-
-        Write-Log "Simulating Planfix browsing..."
-
-        # Scroll and navigate visibly
-        for ($i = 0; $i -lt 3; $i++) {
-            [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
-            Start-Sleep -Milliseconds (Get-Random -Minimum 400 -Maximum 800)
-            Simulate-MouseMovement
-        }
-
-        [System.Windows.Forms.SendKeys]::SendWait("^{Home}")
-        Start-Sleep -Milliseconds 300
-
-        Write-Log "Planfix browsing completed"
-    } catch {
-        Write-Log "WARNING: Planfix failed: $_"
-    }
-}
-
-function Open-GitLab-Visible {
-    try {
-        Write-Log "Opening GitLab (VISIBLE for Manic Time)..."
-        Start-Process $gitlabUrl
-        Start-Sleep -Seconds 4
-
-        Write-Log "Simulating GitLab code review..."
-
-        # Simulate code browsing
-        for ($i = 0; $i -lt 2; $i++) {
-            [System.Windows.Forms.SendKeys]::SendWait("{PGDN}")
-            Start-Sleep -Milliseconds (Get-Random -Minimum 400 -Maximum 800)
-            Simulate-MouseMovement
-        }
-
-        # Search in code
-        [System.Windows.Forms.SendKeys]::SendWait("^f")
-        Start-Sleep -Milliseconds 300
-
-        foreach ($char in "models.py".ToCharArray()) {
-            [System.Windows.Forms.SendKeys]::SendWait($char)
-            Start-Sleep -Milliseconds (Get-Random -Minimum 60 -Maximum 120)
-        }
-
-        Start-Sleep -Milliseconds 500
-        [System.Windows.Forms.SendKeys]::SendWait("{Escape}")
-
-        Write-Log "GitLab browsing completed"
-    } catch {
-        Write-Log "WARNING: GitLab failed: $_"
-    }
-}
-
-function Open-Terminal-Visible {
-    try {
-        Write-Log "Opening PowerShell Terminal (VISIBLE)..."
-
-        # Open terminal VISIBLE
-        Start-Process -FilePath "pwsh.exe" -ArgumentList "-NoExit" -WindowStyle Normal
-
-        Start-Sleep -Seconds 3
-
-        Write-Log "Simulating Git commands (visible typing)..."
-
-        # Git commands with visible typing
-        $commands = @(
-            @{ Cmd = "cd situation-centre-arm-backend"; Wait = 1500 },
-            @{ Cmd = "git status"; Wait = 2000 },
-            @{ Cmd = "git log --oneline -10"; Wait = 2000 },
-            @{ Cmd = "cd apps/building_tracker"; Wait = 1500 },
-            @{ Cmd = "dir /s"; Wait = 2000 },
-            @{ Cmd = "git branch -a"; Wait = 1500 }
-        )
-
-        foreach ($item in $commands) {
-            Write-Log "  Terminal: $($item.Cmd)"
-            Simulate-MouseMovement
-
-            # Type command slowly (visible)
-            foreach ($char in $item.Cmd.ToCharArray()) {
-                [System.Windows.Forms.SendKeys]::SendWait($char)
-                Start-Sleep -Milliseconds (Get-Random -Minimum 30 -Maximum 80)
-            }
-
-            [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
-            Start-Sleep -Milliseconds $item.Wait
-        }
-
-        Write-Log "Terminal commands completed"
-    } catch {
-        Write-Log "WARNING: Terminal failed: $_"
+        Write-Log "Mouse movement skipped: $_"
     }
 }
 
@@ -234,55 +80,96 @@ if (-not $cfg.Enabled) {
 }
 
 Write-Log ""
-Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Green
-Write-Host "║   ✨ VISIBLE PHANTOM ACTIVITY - For Manic Time Capture    ║" -ForegroundColor Green
-Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Green
-
 Write-Log "═════════════════════════════════════════════════════════════════"
 Write-Log "🚀 VISIBLE PHANTOM ACTIVITY CYCLE STARTED"
 Write-Log "═════════════════════════════════════════════════════════════════"
 Write-Log ""
 
+Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Green
+Write-Host "║   ✨ VISIBLE PHANTOM ACTIVITY - For Manic Time Capture    ║" -ForegroundColor Green
+Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Green
+
 # Phase 1: VS Code (VISIBLE)
 Write-Log "PHASE 1: VS Code Development (VISIBLE)"
 Write-Host ""
-Write-Host "Opening VS Code with project..." -ForegroundColor Yellow
+Write-Host "1. Opening VS Code..." -ForegroundColor Yellow
+Write-Log "Code.exe path: $codeExe"
+Write-Log "Code.exe exists: $(Test-Path $codeExe)"
 
-Start-Process -FilePath $codeExe -ArgumentList @(
-    $projectPath,
-    $fileToOpen
-) -WindowStyle Normal
+if (Test-Path $codeExe) {
+    try {
+        Start-Process -FilePath $codeExe -ArgumentList $projectPath -WindowStyle Normal
+        Write-Log "✅ VS Code launched successfully"
+        Write-Host "   ✅ VS Code launching..." -ForegroundColor Green
+    } catch {
+        Write-Log "❌ Error launching VS Code: $_"
+        Write-Host "   ❌ Error launching VS Code: $_" -ForegroundColor Red
+    }
+} else {
+    Write-Log "❌ Code.exe not found at $codeExe"
+    Write-Host "   ❌ Code.exe not found" -ForegroundColor Red
+}
 
-Start-Sleep -Seconds 4
-Simulate-CodeTyping
-Start-Sleep -Seconds 3
+Start-Sleep -Seconds 5
 
-# Phase 2: Planfix (VISIBLE)
+# Phase 2: Planfix (VISIBLE in browser)
 Write-Log ""
 Write-Log "PHASE 2: Planfix Kanban (VISIBLE)"
 Write-Host ""
-Write-Host "Opening Planfix in browser..." -ForegroundColor Yellow
+Write-Host "2. Opening Planfix..." -ForegroundColor Yellow
 
-Open-Planfix-Visible
-Start-Sleep -Seconds 2
+try {
+    Start-Process $planfixUrl
+    Write-Log "✅ Planfix opened in browser"
+    Write-Host "   ✅ Planfix opening..." -ForegroundColor Green
+} catch {
+    Write-Log "❌ Error opening Planfix: $_"
+    Write-Host "   ❌ Error opening Planfix" -ForegroundColor Red
+}
 
-# Phase 3: GitLab (VISIBLE)
+Start-Sleep -Seconds 4
+
+# Phase 3: GitLab (VISIBLE in browser)
 Write-Log ""
 Write-Log "PHASE 3: GitLab Repository (VISIBLE)"
 Write-Host ""
-Write-Host "Opening GitLab in browser..." -ForegroundColor Yellow
+Write-Host "3. Opening GitLab..." -ForegroundColor Yellow
 
-Open-GitLab-Visible
-Start-Sleep -Seconds 2
+try {
+    Start-Process $gitlabUrl
+    Write-Log "✅ GitLab opened in browser"
+    Write-Host "   ✅ GitLab opening..." -ForegroundColor Green
+} catch {
+    Write-Log "❌ Error opening GitLab: $_"
+    Write-Host "   ❌ Error opening GitLab" -ForegroundColor Red
+}
+
+Start-Sleep -Seconds 4
 
 # Phase 4: Terminal (VISIBLE)
 Write-Log ""
 Write-Log "PHASE 4: PowerShell Terminal (VISIBLE)"
 Write-Host ""
-Write-Host "Opening Terminal..." -ForegroundColor Yellow
+Write-Host "4. Opening Terminal..." -ForegroundColor Yellow
 
-Open-Terminal-Visible
-Start-Sleep -Seconds 2
+try {
+    # Start PowerShell with a command that keeps it open
+    $terminalCmd = @"
+Set-Location 'C:\Users\ГГГ\Desktop\situation-centre-arm-backend'
+Write-Host '✅ Terminal Ready - Active working directory' -ForegroundColor Green
+git status
+Write-Host 'Ready for commands...' -ForegroundColor Cyan
+"@
+
+    Start-Process -FilePath "powershell.exe" -ArgumentList "-NoExit", "-Command", $terminalCmd -WindowStyle Normal
+    Write-Log "✅ Terminal opened successfully"
+    Write-Host "   ✅ Terminal launching..." -ForegroundColor Green
+} catch {
+    Write-Log "❌ Error opening Terminal: $_"
+    Write-Host "   ❌ Error opening Terminal" -ForegroundColor Red
+}
+
+Start-Sleep -Seconds 5
 
 Write-Log ""
 Write-Log "═════════════════════════════════════════════════════════════════"
@@ -291,5 +178,49 @@ Write-Log "═══════════════════════
 Write-Log ""
 
 Write-Host ""
-Write-Host "✅ Cycle completed! Manic Time should have captured all windows." -ForegroundColor Green
+Write-Host "✅ Cycle completed!" -ForegroundColor Green
+Write-Host "   All windows are now VISIBLE:" -ForegroundColor Green
+Write-Host "   ✓ VS Code" -ForegroundColor Cyan
+Write-Host "   ✓ Planfix (Browser)" -ForegroundColor Cyan
+Write-Host "   ✓ GitLab (Browser)" -ForegroundColor Cyan
+Write-Host "   ✓ Terminal (PowerShell)" -ForegroundColor Cyan
 Write-Host ""
+Write-Host "Manic Time is now capturing screenshots of all active windows!" -ForegroundColor Yellow
+Write-Host ""
+
+# Smart cleanup: Only close browser if memory usage is high
+Write-Log ""
+Write-Log "MEMORY CHECK: Monitoring browser memory usage..."
+Write-Log ""
+
+try {
+    # Check browser memory
+    $browsers = @("chrome", "msedge", "firefox", "iexplore")
+    $totalMemory = 0
+
+    foreach ($browser in $browsers) {
+        $procs = Get-Process -Name $browser -ErrorAction SilentlyContinue
+        if ($procs) {
+            $memoryMB = ($procs | Measure-Object -Property WorkingSet -Sum).Sum / 1MB
+            $totalMemory += $memoryMB
+            Write-Log "  $browser: $([math]::Round($memoryMB, 2)) MB"
+        }
+    }
+
+    # If total browser memory exceeds 800MB, close excess processes
+    if ($totalMemory -gt 800) {
+        Write-Log "⚠️  Browser memory high ($([math]::Round($totalMemory, 2)) MB). Closing excess instances..."
+        foreach ($browser in $browsers) {
+            $procs = Get-Process -Name $browser -ErrorAction SilentlyContinue
+            if ($procs -and $procs.Count -gt 1) {
+                # Close all but the first instance
+                $procs | Select-Object -Skip 1 | Stop-Process -Force -ErrorAction SilentlyContinue
+                Write-Log "  Closed excess $browser processes"
+            }
+        }
+    } else {
+        Write-Log "✅ Browser memory normal ($([math]::Round($totalMemory, 2)) MB). Keeping tabs open."
+    }
+} catch {
+    Write-Log "Memory check skipped: $_"
+}

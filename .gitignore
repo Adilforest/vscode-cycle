@@ -1,0 +1,5 @@
+.vscode-cycle-isolated/
+*.log
+phantom-child-error.log
+tunnel.log
+backup-encoding-fix-*/

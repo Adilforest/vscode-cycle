@@ -65,10 +65,10 @@
             "modernUICompact": false,
             "partBounds": {
                 "activityBar": {
-                    "top": 61,
+                    "top": 35,
                     "left": 4,
                     "width": 44,
-                    "height": 818,
+                    "height": 849,
                     "outerEdges": {
                         "left": true,
                         "right": false,
@@ -77,10 +77,10 @@
                     }
                 },
                 "sideBar": {
-                    "top": 61,
+                    "top": 35,
                     "left": 48,
                     "width": 300,
-                    "height": 818,
+                    "height": 849,
                     "outerEdges": {
                         "left": false,
                         "right": false,
@@ -89,10 +89,10 @@
                     }
                 },
                 "auxiliaryBar": {
-                    "top": 61,
-                    "left": 1155,
+                    "top": 35,
+                    "left": 1162,
                     "width": 292,
-                    "height": 818,
+                    "height": 849,
                     "outerEdges": {
                         "left": false,
                         "right": true,
@@ -101,10 +101,10 @@
                     }
                 },
                 "editor": {
-                    "top": 61,
+                    "top": 35,
                     "left": 352,
-                    "width": 799,
-                    "height": 818,
+                    "width": 806,
+                    "height": 849,
                     "outerEdges": {
                         "left": false,
                         "right": false,
@@ -135,8 +135,8 @@
                 "mode": 1,
                 "x": 48,
                 "y": 30,
-                "width": 1446,
-                "height": 906
+                "width": 1458,
+                "height": 916
             }
         },
         "openedWindows": []

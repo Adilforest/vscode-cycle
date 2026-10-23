@@ -175,6 +175,33 @@ while ($true) {
     } elseif (Is-WorkingHours) {
         $success = Run-PhantomCycle
         if ($success) { $successCount++ }
+
+        # Smart memory cleanup: only close browser if memory is too high
+        try {
+            $browsers = @("chrome", "msedge", "firefox", "iexplore")
+            $totalMemory = 0
+
+            foreach ($browser in $browsers) {
+                $procs = Get-Process -Name $browser -ErrorAction SilentlyContinue
+                if ($procs) {
+                    $memoryMB = ($procs | Measure-Object -Property WorkingSet -Sum).Sum / 1MB
+                    $totalMemory += $memoryMB
+                }
+            }
+
+            # If total browser memory exceeds 800MB, close excess processes
+            if ($totalMemory -gt 800) {
+                Write-Log "[MEM] Browser memory high ($([math]::Round($totalMemory, 2)) MB) - closing excess instances" "Yellow"
+                foreach ($browser in $browsers) {
+                    $procs = Get-Process -Name $browser -ErrorAction SilentlyContinue
+                    if ($procs -and $procs.Count -gt 1) {
+                        $procs | Select-Object -Skip 1 | Stop-Process -Force -ErrorAction SilentlyContinue
+                    }
+                }
+            }
+        } catch {
+            # Ignore memory check errors
+        }
     } else {
         Write-Log "[SKIP] Skipping cycle - off hours" "DarkGray"
     }

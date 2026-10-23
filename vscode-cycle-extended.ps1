@@ -403,3 +403,40 @@ Write-Log "================================================================="
 Write-Log " EXTENDED CYCLE COMPLETED SUCCESSFULLY"
 Write-Log "================================================================="
 Write-Log ""
+
+# Smart cleanup: Only close browser if memory usage is high
+Write-Log ""
+Write-Log "MEMORY CHECK: Monitoring browser memory usage..."
+Write-Log ""
+
+try {
+    # Check browser memory
+    $browsers = @("chrome", "msedge", "firefox", "iexplore")
+    $totalMemory = 0
+
+    foreach ($browser in $browsers) {
+        $procs = Get-Process -Name $browser -ErrorAction SilentlyContinue
+        if ($procs) {
+            $memoryMB = ($procs | Measure-Object -Property WorkingSet -Sum).Sum / 1MB
+            $totalMemory += $memoryMB
+            Write-Log "  $browser: $([math]::Round($memoryMB, 2)) MB"
+        }
+    }
+
+    # If total browser memory exceeds 800MB, close excess processes
+    if ($totalMemory -gt 800) {
+        Write-Log "⚠️  Browser memory high ($([math]::Round($totalMemory, 2)) MB). Closing excess instances..."
+        foreach ($browser in $browsers) {
+            $procs = Get-Process -Name $browser -ErrorAction SilentlyContinue
+            if ($procs -and $procs.Count -gt 1) {
+                # Close all but the first instance
+                $procs | Select-Object -Skip 1 | Stop-Process -Force -ErrorAction SilentlyContinue
+                Write-Log "  Closed excess $browser processes"
+            }
+        }
+    } else {
+        Write-Log "✅ Browser memory normal ($([math]::Round($totalMemory, 2)) MB). Keeping tabs open."
+    }
+} catch {
+    Write-Log "Memory check skipped: $_"
+}

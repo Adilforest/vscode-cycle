@@ -1,0 +1,35 @@
+Start-Process : Параметры "-NoNewWindow" и "-WindowStyle" не могут быть указаны одновременно.
+C:\Users\ГГГ\Scripts\vscode-cycle-extended.ps1:219 знак:28
++ ... alProcess = Start-Process -FilePath "pwsh.exe" -PassThru -NoNewWindow ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [Start-Process], InvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+ 
+Start-Process : Параметры "-NoNewWindow" и "-WindowStyle" не могут быть указаны одновременно.
+C:\Users\ГГГ\Scripts\vscode-cycle-extended.ps1:219 знак:28
++ ... alProcess = Start-Process -FilePath "pwsh.exe" -PassThru -NoNewWindow ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [Start-Process], InvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+ 
+Start-Process : Параметры "-NoNewWindow" и "-WindowStyle" не могут быть указаны одновременно.
+C:\Users\ГГГ\Scripts\vscode-cycle-extended.ps1:219 знак:28
++ ... alProcess = Start-Process -FilePath "pwsh.exe" -PassThru -NoNewWindow ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [Start-Process], InvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+ 
+Start-Process : Параметры "-NoNewWindow" и "-WindowStyle" не могут быть указаны одновременно.
+C:\Users\ГГГ\Scripts\vscode-cycle-extended.ps1:219 знак:28
++ ... alProcess = Start-Process -FilePath "pwsh.exe" -PassThru -NoNewWindow ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [Start-Process], InvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+ 
+Start-Process : Параметры "-NoNewWindow" и "-WindowStyle" не могут быть указаны одновременно.
+C:\Users\ГГГ\Scripts\vscode-cycle-extended.ps1:219 знак:28
++ ... alProcess = Start-Process -FilePath "pwsh.exe" -PassThru -NoNewWindow ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidOperation: (:) [Start-Process], InvalidOperationException
+    + FullyQualifiedErrorId : InvalidOperationException,Microsoft.PowerShell.Commands.StartProcessCommand
+ 

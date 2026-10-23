@@ -42,3 +42,4 @@
 2026-10-23T08:44:02Z INF precheck complete hard_fail=false run_id=efb69316-306e-428c-9a69-a8679f156d6a suggested_protocol=quic
 2026-10-23T09:25:48Z ERR  error="Incoming request ended abruptly: context canceled" connIndex=0 event=1 ingressRule=0 originService=http://127.0.0.1:5000
 2026-10-23T09:25:48Z ERR Request failed error="Incoming request ended abruptly: context canceled" connIndex=0 dest=https://boys-celebs-beverages-transparency.trycloudflare.com/api/health?key=cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d event=0 ip=2606:4700:a8::3 type=http
+2026-10-23T09:54:07Z ERR Failed to refresh DNS local resolver error="lookup region1.v2.argotunnel.com: i/o timeout"

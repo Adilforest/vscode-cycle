@@ -112,7 +112,9 @@ if (Test-Path $codeExe) {
 
 # Show VS Code for 2 minutes (120 seconds)
 Start-Sleep -Seconds 120
-Write-Log "VS Code visible for 2 minutes complete"
+Write-Log "Closing VS Code after 2 minutes..."
+Get-Process -Name "Code" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+Start-Sleep -Milliseconds 500
 
 # Phase 2: Planfix (VISIBLE for 2 minutes then close)
 Write-Log ""
@@ -181,7 +183,9 @@ Write-Host 'Ready for commands...' -ForegroundColor Cyan
 
 # Show Terminal for 2 minutes (120 seconds)
 Start-Sleep -Seconds 120
-Write-Log "Terminal visible for 2 minutes complete"
+Write-Log "Closing Terminal after 2 minutes..."
+Get-Process -Name "powershell" -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $PID } | Stop-Process -Force -ErrorAction SilentlyContinue
+Start-Sleep -Milliseconds 500
 
 Write-Log ""
 Write-Log "═════════════════════════════════════════════════════════════════"

@@ -387,11 +387,6 @@ Simulate-CodeTyping -TargetProcessIds $isolatedPids
 # Show VS Code for 2 minutes for Manic Time screenshots
 Write-Log "VS Code visible for 2 minutes..."
 Start-Sleep -Seconds 120
-Write-Log "Closing VS Code after 2 minutes..."
-Get-CimInstance Win32_Process -Filter "Name='Code.exe'" -ErrorAction SilentlyContinue |
-    Where-Object { $_.CommandLine -like "*vscode-cycle-isolated*" } |
-    ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-Start-Sleep -Milliseconds 500
 
 # 2. Planfix
 Write-Log ""
@@ -415,9 +410,6 @@ Open-Terminal
 # Show Terminal for 2 minutes for Manic Time screenshots
 Write-Log "Terminal visible for 2 minutes..."
 Start-Sleep -Seconds 120
-Write-Log "Closing Terminal after 2 minutes..."
-Get-Process -Name "powershell" -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $PID } | Stop-Process -Force -ErrorAction SilentlyContinue
-Start-Sleep -Milliseconds 500
 
 # Cleanup
 Write-Log ""

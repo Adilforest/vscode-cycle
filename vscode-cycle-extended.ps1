@@ -361,28 +361,11 @@ Write-Log " EXTENDED PHANTOM ACTIVITY CYCLE STARTED"
 Write-Log "================================================================="
 Write-Log ""
 
-# 1. VS Code
+# 1. VS Code (NORMAL WINDOW - VISIBLE)
 Write-Log "PHASE 1: VS Code Development"
-Write-Log "Opening isolated VS Code instance with project..."
-Start-Process -FilePath $codeExe -ArgumentList @(
-    $projectPath,
-    $fileToOpen,
-    "--user-data-dir", "C:\Users\$username\Scripts\.vscode-cycle-isolated\user-data",
-    "--extensions-dir", "C:\Users\$username\Scripts\.vscode-cycle-isolated\extensions"
-) -WindowStyle Hidden
-
-# A hidden window can never hold keyboard focus, so the guarded typing below
-# sends nothing while VS Code is hidden. Do not switch to Normal without first
-# pointing the cycle at a scratch copy: the sequence ends with Ctrl+S on the
-# real project file.
-$isolatedPids = @()
-if (Get-Command Wait-IsolatedCodeWindow -ErrorAction SilentlyContinue) {
-    $isolatedPids = Wait-IsolatedCodeWindow -Marker ".vscode-cycle-isolated" -TimeoutSeconds 15
-}
-if ($isolatedPids.Count -eq 0) {
-    Write-Log "VS Code window is hidden - keys are not sent (they would reach another window)"
-}
-Simulate-CodeTyping -TargetProcessIds $isolatedPids
+Write-Log "Opening VS Code normally (VISIBLE)..."
+Start-Process -FilePath $codeExe -ArgumentList $projectPath -WindowStyle Normal
+Write-Log "✅ VS Code opened in normal window"
 
 # Show VS Code for 2 minutes for Manic Time screenshots
 Write-Log "VS Code visible for 2 minutes..."

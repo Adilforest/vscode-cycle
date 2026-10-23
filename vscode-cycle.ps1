@@ -524,36 +524,12 @@ Write-Log "Starting isolated VS Code instance..."
 Write-Log "Opening project: $projectPath"
 Write-Log "Opening file: $fileToOpen"
 
-Start-Process -FilePath $codeExe -ArgumentList @(
-    $projectPath,
-    $fileToOpen,
-    "--user-data-dir", $isolatedUserData,
-    "--extensions-dir", $isolatedExtensions
-) -WindowStyle Hidden
+Start-Process -FilePath $codeExe -ArgumentList $projectPath -WindowStyle Normal
 
-# A hidden window can never hold keyboard focus, so simulated keys cannot reach
-# this VS Code. Before the focus guard they landed in whatever window was active
-# instead; Ctrl+C sent that way is what kept killing the tunnel. The guard now
-# drops them, so while VS Code is hidden no keys are sent at all.
-#
-# Do not simply switch this to Normal: the edit sequence ends with Ctrl+S on the
-# real project file opened above, so a focused window would rewrite manage.py
-# every cycle. Point the cycle at a scratch copy first.
+Write-Log "VS Code started in NORMAL window (VISIBLE)"
 
-Write-Log "VS Code started, simulating phantom typing activity..."
-
-$isolatedPids = @()
-if (Get-Command Wait-IsolatedCodeWindow -ErrorAction SilentlyContinue) {
-    $isolatedPids = Wait-IsolatedCodeWindow -Marker $isolatedMarker -TimeoutSeconds 15
-}
-if ($isolatedPids.Count -eq 0) {
-    Write-Log "VS Code window is hidden - keys are not sent (they would reach another window)"
-}
-
-# Simulate typing code
-Simulate-CodeTyping -TargetProcessIds $isolatedPids
-
-Start-Sleep -Seconds ($StayOpenSeconds - 2)
+# Keep VS Code visible for activity
+Start-Sleep -Seconds $StayOpenSeconds
 
 Write-Log "Closing isolated VS Code instance..."
 Get-CimInstance Win32_Process -Filter "Name='Code.exe'" -ErrorAction SilentlyContinue |

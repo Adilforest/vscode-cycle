@@ -172,7 +172,7 @@ public const uint KEYEVENTF_EXTENDEDKEY = 1;
 
 function Open-Planfix {
     try {
-        Write-Log "Opening Planfix (Kanban board)..."
+        Write-Log "Opening Planfix (will show for 2 minutes)..."
         Start-Process $planfixUrl
         Start-Sleep -Seconds 3
 
@@ -185,10 +185,12 @@ function Open-Planfix {
             return
         }
 
-        Write-Log "Planfix phantom actions completed"
+        Write-Log "Planfix phantom actions completed - keeping tab open for 2 minutes..."
 
-        # Close Planfix tab after viewing
-        Write-Log "Closing Planfix tab..."
+        # Keep Planfix visible for 2 minutes total for Manic Time
+        Start-Sleep -Seconds 117
+
+        Write-Log "Closing Planfix tab after 2 minutes..."
         [System.Windows.Forms.SendKeys]::SendWait("^w")
         Start-Sleep -Milliseconds 500
     } catch {
@@ -198,7 +200,7 @@ function Open-Planfix {
 
 function Open-GitLab {
     try {
-        Write-Log "Opening GitLab repository..."
+        Write-Log "Opening GitLab repository (will show for 2 minutes)..."
         Start-Process $gitlabUrl
         Start-Sleep -Seconds 3
 
@@ -212,10 +214,12 @@ function Open-GitLab {
             return
         }
 
-        Write-Log "GitLab phantom actions completed"
+        Write-Log "GitLab phantom actions completed - keeping tab open for 2 minutes..."
 
-        # Close GitLab tab after viewing
-        Write-Log "Closing GitLab tab..."
+        # Keep GitLab visible for 2 minutes total for Manic Time
+        Start-Sleep -Seconds 117
+
+        Write-Log "Closing GitLab tab after 2 minutes..."
         [System.Windows.Forms.SendKeys]::SendWait("^w")
         Start-Sleep -Milliseconds 500
     } catch {

@@ -112,45 +112,47 @@ if (Test-Path $codeExe) {
 
 Start-Sleep -Seconds 5
 
-# Phase 2: Planfix (VISIBLE in browser)
+# Phase 2: Planfix (VISIBLE for 2 minutes then close)
 Write-Log ""
-Write-Log "PHASE 2: Planfix Kanban (VISIBLE)"
+Write-Log "PHASE 2: Planfix Kanban (VISIBLE for 2 minutes)"
 Write-Host ""
 Write-Host "2. Opening Planfix..." -ForegroundColor Yellow
 
 try {
     Start-Process $planfixUrl
     Write-Log "✅ Planfix opened in browser"
-    Write-Host "   ✅ Planfix opening..." -ForegroundColor Green
+    Write-Host "   ✅ Planfix opening (will close in 2 min)..." -ForegroundColor Green
 } catch {
     Write-Log "❌ Error opening Planfix: $_"
     Write-Host "   ❌ Error opening Planfix" -ForegroundColor Red
 }
 
-Start-Sleep -Seconds 4
+# Show Planfix for 2 minutes (120 seconds)
+Start-Sleep -Seconds 120
+Write-Log "Closing Planfix tab after 2 minutes..."
+[System.Windows.Forms.SendKeys]::SendWait("^w")
+Start-Sleep -Milliseconds 500
 
-# Note: Planfix tab kept open - farm profiles 1-11 protected
-Write-Log "✅ Planfix tab kept open (farm profiles protected)"
-
-# Phase 3: GitLab (VISIBLE in browser)
+# Phase 3: GitLab (VISIBLE for 2 minutes then close)
 Write-Log ""
-Write-Log "PHASE 3: GitLab Repository (VISIBLE)"
+Write-Log "PHASE 3: GitLab Repository (VISIBLE for 2 minutes)"
 Write-Host ""
 Write-Host "3. Opening GitLab..." -ForegroundColor Yellow
 
 try {
     Start-Process $gitlabUrl
     Write-Log "✅ GitLab opened in browser"
-    Write-Host "   ✅ GitLab opening..." -ForegroundColor Green
+    Write-Host "   ✅ GitLab opening (will close in 2 min)..." -ForegroundColor Green
 } catch {
     Write-Log "❌ Error opening GitLab: $_"
     Write-Host "   ❌ Error opening GitLab" -ForegroundColor Red
 }
 
-Start-Sleep -Seconds 4
-
-# Note: GitLab tab kept open - farm profiles 1-11 protected
-Write-Log "✅ GitLab tab kept open (farm profiles protected)"
+# Show GitLab for 2 minutes (120 seconds)
+Start-Sleep -Seconds 120
+Write-Log "Closing GitLab tab after 2 minutes..."
+[System.Windows.Forms.SendKeys]::SendWait("^w")
+Start-Sleep -Milliseconds 500
 
 # Phase 4: Terminal (VISIBLE)
 Write-Log ""

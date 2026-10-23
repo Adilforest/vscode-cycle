@@ -1,0 +1,229 @@
+================================================================================
+CLOUDFLARE TUNNEL SETUP - Quick Guide (NO EMOJI)
+================================================================================
+
+STEP 1: Download and Install cloudflared
+================================================================================
+
+1. Go to: https://github.com/cloudflare/cloudflared/releases
+2. Download: cloudflared-windows-amd64.msi (latest version)
+3. Install: Double-click the .msi file
+
+Verify installation in PowerShell:
+  cloudflared --version
+
+Should show: cloudflared version X.X.X
+
+
+STEP 2: Authenticate with Cloudflare
+================================================================================
+
+Run in PowerShell:
+  cloudflared tunnel login
+
+Browser will open:
+  - Sign in to your Cloudflare account
+  - Select your domain (or create free one at cloudflare.com)
+  - Click "Authorize" button
+
+You'll see: "You have successfully authenticated"
+A certificate will be saved to: C:\Users\ГГГ\.cloudflared\cert.pem
+
+
+STEP 3: Create Tunnel
+================================================================================
+
+Run in PowerShell:
+  cloudflared tunnel create phantom-farm
+
+Output will show:
+  Tunnel created with ID: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+  Note this ID!
+
+Config file created: C:\Users\ГГГ\.cloudflared\phantom-farm.json
+
+
+STEP 4: Create Configuration File
+================================================================================
+
+Create file: C:\Users\ГГГ\Scripts\cloudflared-config.yml
+
+Content:
+---
+tunnel: phantom-farm
+credentials-file: C:\Users\ГГГ\.cloudflared\phantom-farm.json
+
+ingress:
+  - hostname: phantom-farm.yourdomain.com
+    service: http://localhost:5000
+  - service: http_status:404
+---
+
+Replace "yourdomain.com" with your actual Cloudflare domain.
+
+
+STEP 5: Test Tunnel
+================================================================================
+
+Run in PowerShell:
+  cloudflared tunnel run phantom-farm
+
+Output will show:
+  INF Tunnel running at https://phantom-farm-xxxx.trycloudflare.me/
+
+This is your TEMPORARY tunnel URL (changes each restart).
+
+
+STEP 6: Set Up Permanent URL (Optional)
+================================================================================
+
+In Cloudflare Dashboard:
+  - Go to: https://dash.cloudflare.com/
+  - Select your domain
+  - Navigate to: DNS > Records
+  - Click: Create New Record
+    Type: CNAME
+    Name: phantom-farm
+    Content: a1b2c3d4-e5f6-7890-abcd-ef1234567890.cfargotunnel.com
+    Proxy Status: Proxied
+    Click: Save
+
+Wait 2-5 minutes for DNS to propagate.
+
+Your permanent URL: https://phantom-farm.yourdomain.com/?key=cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d
+
+
+STEP 7: Set Up Auto-Start (Optional)
+================================================================================
+
+Create file: C:\Users\ГГГ\Scripts\start-tunnel.bat
+
+Content:
+---
+@echo off
+title Phantom Activity - Cloudflare Tunnel
+color 0B
+
+echo ====================================================================
+echo [TUNNEL] Starting Cloudflare Tunnel for Phantom Activity
+echo ====================================================================
+echo.
+
+cloudflared tunnel run phantom-farm
+
+pause
+---
+
+To run at startup:
+  1. Press Win+R
+  2. Type: shell:startup
+  3. Copy start-tunnel.bat to this folder
+
+
+STEP 8: Access Remote Control
+================================================================================
+
+From your home laptop, use one of:
+
+TEMPORARY URL (no DNS setup needed):
+  https://phantom-farm-xxxx.trycloudflare.me/?key=cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d
+
+PERMANENT URL (after DNS setup):
+  https://phantom-farm.yourdomain.com/?key=cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d
+
+LOCAL NETWORK (same WiFi):
+  http://192.168.8.49:5000/?key=cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d
+
+
+SECURITY NOTES
+================================================================================
+
+1. Your API Key (cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d) is like a password
+   - Keep it secret
+   - Don't share with others
+   - If compromised, regenerate in config
+
+2. HTTPS is automatically secured by Cloudflare
+   - All traffic is encrypted
+   - DDoS protection included
+   - Free tier includes these features
+
+3. Rate limiting is enabled:
+   - Prevents brute force attacks
+   - Max 100 requests per 10 minutes per IP
+
+4. Monitor in Cloudflare Dashboard:
+   - Analytics > Traffic
+   - See all requests to your tunnel
+
+
+TROUBLESHOOTING
+================================================================================
+
+ERROR: "Could not find Cloudflare certificate"
+  FIX: Run "cloudflared tunnel login" again
+
+ERROR: "Cannot connect to tunnel"
+  FIX: Check internet connection
+  FIX: Restart tunnel: cloudflared tunnel run phantom-farm
+
+ERROR: "Connection refused localhost:5000"
+  FIX: Make sure web server is running in another PowerShell window
+  FIX: Run: start-webserver.bat first
+
+SLOW CONNECTION
+  CAUSE: Cloudflare Tunnel adds 100-200ms latency
+  FIX: Use local network URL if available (same WiFi)
+
+
+FINAL CHECKLIST
+================================================================================
+
+[_] cloudflared installed and working
+[_] Authenticated to Cloudflare
+[_] Tunnel "phantom-farm" created
+[_] Configuration file created
+[_] Tunnel tested and working
+[_] Permanent URL set up in Cloudflare (optional)
+[_] Web server running on port 5000
+[_] Can access from home laptop
+[_] Phantom Activity starts via START button
+
+
+QUICK COMMANDS REFERENCE
+================================================================================
+
+Check tunnel status:
+  cloudflared tunnel list
+
+View tunnel logs:
+  cloudflared tunnel logs phantom-farm
+
+Restart tunnel:
+  cloudflared tunnel run phantom-farm (run in PowerShell)
+
+Stop tunnel:
+  Press Ctrl+C
+
+Delete tunnel (if needed):
+  cloudflared tunnel delete phantom-farm
+
+
+DONE!
+================================================================================
+
+Your Phantom Activity System is now accessible from anywhere with:
+
+STEP 1: Make sure both are running on farm laptop:
+  - start-webserver.bat (web server on port 5000)
+  - start-tunnel.bat (or: cloudflared tunnel run phantom-farm)
+
+STEP 2: From home laptop, open:
+  https://phantom-farm-xxxx.trycloudflare.me/?key=cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d
+
+STEP 3: Click START to run phantom activity remotely!
+
+System is secure, encrypted, and protected by Cloudflare.
+
+Created: 2026-10-23
+Status: Ready for production use

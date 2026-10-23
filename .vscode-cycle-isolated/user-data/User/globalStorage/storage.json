@@ -1,0 +1,144 @@
+{
+    "telemetry.machineId": "4b584569ab008e4402dfc06ce06262f53518012328db62f8ecf4fb211588ef40",
+    "telemetry.sqmId": "{756F34B6-77B7-4BAC-9FCC-16B4C072A712}",
+    "telemetry.devDeviceId": "068af8fe-9f1d-4aba-a0f8-dd2943c3a691",
+    "backupWorkspaces": {
+        "workspaces": [],
+        "folders": [
+            {
+                "folderUri": "file:///c%3A/Users/%D0%93%D0%93%D0%93/Desktop/situation-centre-arm-backend"
+            }
+        ],
+        "emptyWindows": []
+    },
+    "windowControlHeight": 35,
+    "profileAssociations": {
+        "workspaces": {
+            "file:///c%3A/Users/%D0%93%D0%93%D0%93/Desktop/situation-centre-arm-backend": "__default__profile__"
+        },
+        "emptyWindows": {}
+    },
+    "theme": "vs-dark",
+    "themeBackground": "#121314",
+    "windowSplash": {
+        "zoomLevel": 0,
+        "baseTheme": "vs-dark",
+        "colorInfo": {
+            "foreground": "#bfbfbf",
+            "background": "#121314",
+            "editorBackground": "#121314",
+            "titleBarBackground": "#191a1b",
+            "titleBarInactiveBackground": "#121314",
+            "titleBarBorder": "#2a2b2c",
+            "activityBarBackground": "#191a1b",
+            "activityBarBorder": "#2a2b2c",
+            "modernActivityBarBackground": "#191a1b",
+            "modernActivityBarInactiveBackground": "#191a1b",
+            "modernActivityBarBorder": "#252526",
+            "modernPanelBorder": "#2a2b2c",
+            "modernUIShellBackground": "#191a1b",
+            "modernUIInactiveShellBackground": "#121314",
+            "sideBarBackground": "#191a1b",
+            "sideBarBorder": "#2a2b2c",
+            "panelBackground": "#191a1b",
+            "editorGroupBorder": "rgba(255, 255, 255, 0.09)",
+            "editorBorder": "#2a2b2c",
+            "surfaceBackground": "#191a1b",
+            "surfaceBorder": "#2a2b2c",
+            "agentsPanelBackground": "#191a1b",
+            "agentsPanelBorder": "#2a2b2c",
+            "statusBarBackground": "#191a1b",
+            "statusBarInactiveBackground": "#121314",
+            "statusBarBorder": "#2a2b2c",
+            "statusBarNoFolderBackground": "#191a1b"
+        },
+        "layoutInfo": {
+            "sideBarSide": "left",
+            "editorPartMinWidth": 220,
+            "titleBarHeight": 35,
+            "activityBarWidth": 48,
+            "sideBarWidth": 300,
+            "auxiliaryBarWidth": 300,
+            "statusBarHeight": 28,
+            "windowBorder": false,
+            "modernUI": true,
+            "modernUICompact": false,
+            "partBounds": {
+                "activityBar": {
+                    "top": 61,
+                    "left": 4,
+                    "width": 44,
+                    "height": 818,
+                    "outerEdges": {
+                        "left": true,
+                        "right": false,
+                        "top": true,
+                        "bottom": true
+                    }
+                },
+                "sideBar": {
+                    "top": 61,
+                    "left": 48,
+                    "width": 300,
+                    "height": 818,
+                    "outerEdges": {
+                        "left": false,
+                        "right": false,
+                        "top": true,
+                        "bottom": true
+                    }
+                },
+                "auxiliaryBar": {
+                    "top": 61,
+                    "left": 1155,
+                    "width": 292,
+                    "height": 818,
+                    "outerEdges": {
+                        "left": false,
+                        "right": true,
+                        "top": true,
+                        "bottom": true
+                    }
+                },
+                "editor": {
+                    "top": 61,
+                    "left": 352,
+                    "width": 799,
+                    "height": 818,
+                    "outerEdges": {
+                        "left": false,
+                        "right": false,
+                        "top": true,
+                        "bottom": true
+                    }
+                }
+            }
+        }
+    },
+    "windowSplashWorkspaceOverride": {
+        "layoutInfo": {
+            "sideBarWidth": 300,
+            "auxiliaryBarWidth": 300,
+            "workspaces": {
+                "79c57cabfec62f2e3edd0e1961df8952": {
+                    "sideBarVisible": true,
+                    "auxiliaryBarVisible": true
+                }
+            }
+        }
+    },
+    "windowsState": {
+        "lastActiveWindow": {
+            "folder": "file:///c%3A/Users/%D0%93%D0%93%D0%93/Desktop/situation-centre-arm-backend",
+            "backupPath": "C:\\Users\\ГГГ\\Scripts\\.vscode-cycle-isolated\\user-data\\Backups\\1b3701e217a00be4ff7b62d2db861025",
+            "uiState": {
+                "mode": 1,
+                "x": 48,
+                "y": 30,
+                "width": 1446,
+                "height": 906
+            }
+        },
+        "openedWindows": []
+    }
+}

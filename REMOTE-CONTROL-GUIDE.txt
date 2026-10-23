@@ -1,0 +1,225 @@
+================================================================================
+PHANTOM ACTIVITY - REMOTE CONTROL GUIDE (NO EMOJI)
+================================================================================
+
+HOW TO GET THE LINK
+================================================================================
+
+The remote link is always stored in:
+  C:\Users\%USERNAME%\Scripts\remote-url.txt
+
+Open that file, copy the link, and use it from any device.
+
+IMPORTANT: the link CHANGES every time the tunnel restarts (after a reboot,
+for example). This is how Cloudflare Quick Tunnels work when you do not own a
+domain. Before leaving the machine, copy the current link from remote-url.txt.
+
+Local access on the same machine:
+  http://localhost:5000/?key=<API_KEY>
+
+Local network (same WiFi):
+  http://192.168.8.49:5000/?key=<API_KEY>
+
+
+WHAT STARTS AUTOMATICALLY
+================================================================================
+
+Two scheduled tasks run at every Windows logon:
+
+  PhantomActivity-WebServer   starts 15 seconds after logon, as administrator
+  PhantomActivity-Tunnel      starts 45 seconds after logon
+
+The web server needs administrator rights to register the HTTP prefix
+http://+:5000/, which is why it runs with highest privileges.
+
+The tunnel task stays in the Running state on purpose: it holds the tunnel
+process alive and restarts it automatically if the tunnel drops, writing the
+new link to remote-url.txt each time.
+
+Check them with:
+  Get-ScheduledTask -TaskName PhantomActivity-*
+
+Restart them with:
+  Stop-ScheduledTask  -TaskName PhantomActivity-WebServer
+  Start-ScheduledTask -TaskName PhantomActivity-WebServer
+
+
+WHAT YOU CAN DO FROM THE WEB PANEL
+================================================================================
+
+START / STOP
+  Starts or stops the phantom activity. Standard mode drives VS Code only,
+  Extended mode drives four applications.
+
+SCHEDULE SETTINGS (new)
+  Everything below is editable remotely and saved to vscode-cycle.config.json:
+
+  Schedule enabled      master on/off flag for the schedule
+  Work start            hour : minute when activity begins
+  Work end              hour : minute when activity stops, after work start
+  Lunch start           hour : minute when the break begins
+  Lunch end             hour : minute when activity resumes, after lunch start
+  Cycle duration        how long VS Code stays open per cycle, 5 - 600 seconds
+  Interval              pause between cycles in working hours: a random value
+                        from this many minutes up to twice it (5 gives 5 - 9)
+  Working days          click a day to switch it on or off, at least one
+  Holidays              one date per line, format YYYY-MM-DD
+
+  Press SAVE SETTINGS to apply. The scheduler checks for changes every 30
+  seconds, so a save takes effect within a minute, with no restart. If it is
+  working time at that moment, a cycle starts right away. Press RELOAD to
+  discard edits and re-read what is stored. All times are the farm machine's
+  local time.
+
+  The dashboard always shows the times the scripts really use. The tray
+  settings dialog stores each time as a "minute from - minute to" pair; only
+  one half of each pair is used (work starts at the "from" minute, work ends
+  at the "to" minute, lunch runs from the start "from" to the end "to"). A
+  "to" minute of 0 means on the hour. Saving from the dashboard writes the same
+  minute into both halves, so the two tools always agree.
+
+SCHEDULE STATUS
+  The status card shows which phase the farm is in right now:
+    disabled          the schedule is switched off, nothing runs
+    working           inside working hours, cycles run
+    lunch-break       inside the lunch window, cycles are skipped
+    off-hours         outside working hours
+    non-working-day   today is not in the working days list
+    holiday           today is listed in Holidays
+
+
+KEYBOARD SIMULATION - READ THIS
+================================================================================
+
+Simulated keys go to whichever window is in front, not to the window a script
+has in mind. VS Code is started hidden, and a hidden window can never be in
+front, so for a long time every simulated key - including Ctrl+C, Ctrl+A,
+Delete and Enter - landed in some other window. That is what kept killing the
+tunnel and the activity itself.
+
+phantom-focus-guard.ps1 now stops this: a key is sent only while the intended
+window (the isolated VS Code, or a browser tab titled Planfix / GitLab) is in
+front, re-checked before every key. With VS Code hidden that never happens, so
+a cycle opens VS Code, keeps it open for the cycle duration, sends no keys and
+closes it. The log says "Typing skipped - VS Code was never the foreground
+window" - that is expected, not an error.
+
+Do NOT simply make the VS Code window visible to get typing back. The edit
+sequence pastes, deletes lines and ends with Ctrl+S on the real project file
+(situation-centre-arm-backend\manage.py), so a focused window would corrupt
+and save that file on every cycle. Typing can be brought back safely only by
+pointing the cycle at a scratch copy of the project first.
+
+The long-lived processes (web server, tunnel, activity loop) run with hidden
+windows for the same reason: a hidden window cannot be activated, so no stray
+key can reach it, and it cannot be closed by accident from the taskbar.
+
+
+VALIDATION
+================================================================================
+
+Settings are checked in the browser and again on the server. A request is
+rejected as a whole if anything is wrong, and the stored config is left
+untouched. Rejected cases include:
+
+  hours outside 0 - 23, minutes outside 0 - 59
+  work end earlier than or equal to work start
+  lunch end earlier than or equal to lunch start
+  no working day selected
+  a holiday date that is not YYYY-MM-DD
+  cycle duration outside 5 - 600, interval outside 1 - 120
+
+The config is written to a temporary file and swapped in with an atomic
+replace, so neither a crash nor a reader at the wrong moment ever sees a
+truncated or missing config.
+
+Starting the activity twice is refused while it is already running, and STOP
+only ever stops the recorded process if it is still that same process (the
+status file survives reboots and Windows reuses process ids).
+
+
+API REFERENCE
+================================================================================
+
+All endpoints need ?key=<API_KEY>
+
+  GET  /                read the dashboard
+  GET  /api/status      activity status, PID, uptime
+  GET  /api/health      server health, PowerShell version, free disk
+  GET  /api/schedule    current phase, server time, work and lunch windows
+  GET  /api/config      stored settings
+  POST /api/config      update settings, JSON body with any subset of fields
+  GET  /api/start       start activity, optional &mode=standard|extended
+  GET  /api/stop        stop activity
+  GET  /api/logs        recent log lines
+
+Example, move lunch to 12:30 - 13:15 and work Saturdays too:
+
+  curl -X POST "http://localhost:5000/api/config?key=<API_KEY>" ^
+    -H "Content-Type: application/json" ^
+    -d "{\"LunchStartHour\":12,\"LunchStartMinuteMin\":30,\"LunchEndHour\":13,\"LunchEndMinuteMin\":15,\"ActiveDays\":[\"Monday\",\"Tuesday\",\"Wednesday\",\"Thursday\",\"Friday\",\"Saturday\"]}"
+
+
+FILES
+================================================================================
+
+  phantom-activity-webserver-fixed.ps1   REST API and dashboard host
+  phantom-activity-web-fixed.html        dashboard page
+  phantom-activity-alwayson.ps1          always-on scheduler loop
+  vscode-cycle.ps1                       one activity cycle, standard mode
+  vscode-cycle-extended.ps1              one activity cycle, extended mode
+  vscode-cycle.config.json               the schedule settings
+  start-quick-tunnel.ps1                 opens the tunnel, writes remote-url.txt
+  phantom-focus-guard.ps1                sends keys only to the intended window
+  quick-tunnel-config.yml                isolated config for the quick tunnel
+  restart-webserver.ps1                  stops and restarts the web server
+  install-autostart.ps1                  registers the two scheduled tasks
+  remote-url.txt                         the current remote link
+  vscode-cycle.log                       shared activity and API log
+  tunnel.log                             cloudflared output
+  phantom-child-error.log                stderr of the activity process
+
+
+TROUBLESHOOTING
+================================================================================
+
+Link returns 530 or does not open
+  The tunnel is down. Check: Get-ScheduledTask -TaskName PhantomActivity-Tunnel
+  It should be Running. Restart it, then read the NEW link from remote-url.txt.
+
+Link returns 404 from Cloudflare
+  The tunnel started without its isolated config and picked up the named
+  tunnel settings. start-quick-tunnel.ps1 passes --config to prevent this.
+
+Running start-quick-tunnel.ps1 by hand says "Another copy ... exiting"
+  Correct: the scheduled task already manages the tunnel, and only one copy
+  may (two copies would keep replacing each other's tunnel). Read the current
+  link from remote-url.txt instead.
+
+Why did the tunnel stop?
+  The previous run's cloudflared output is kept in tunnel.log.prev, and the
+  stop reason is written to vscode-cycle.log as a [TUNNEL] line.
+
+Panel loads but every request is 401
+  The key in the address bar does not match the server key.
+
+Status flips to STOPPED right after START
+  Read phantom-child-error.log. The activity process failed to stay alive and
+  its error is recorded there.
+
+Activity never runs although status is RUNNING
+  Check /api/schedule. The farm only works during working hours, outside
+  lunch, on a working day that is not a holiday.
+
+
+SECURITY
+================================================================================
+
+The key in the link is a password: anyone holding the link can control this
+machine. Do not publish it. To change it, edit the ApiKey argument in both
+scheduled tasks and restart them.
+
+Cloudflare terminates HTTPS, so traffic over the internet is encrypted.
+
+================================================================================
+Updated: 2026-10-23

@@ -1,0 +1,147 @@
+# Always-On Phantom Activity Mode
+# Runs indefinitely with smart intervals and automatic cycle selection
+
+param(
+    [int]$QuickCheckMinutes = 5,
+    [switch]$UseExtended = $false,
+    [switch]$ShowConsole = $false
+)
+
+Add-Type -AssemblyName System.Windows.Forms
+
+$username = $env:USERNAME
+$scriptsDir = "C:\Users\$username\Scripts"
+$configFile = "$scriptsDir\vscode-cycle.config.json"
+$logFile = "$scriptsDir\vscode-cycle.log"
+
+function Write-Log {
+    param([string]$Message, [string]$Color = "White")
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $line = "[$timestamp] $Message"
+    Add-Content -Path $logFile -Value $line
+    if ($ShowConsole) {
+        Write-Host $line -ForegroundColor $Color
+    }
+}
+
+function Get-AppConfig {
+    if (Test-Path $configFile) {
+        try { return Get-Content -Path $configFile -Raw | ConvertFrom-Json }
+        catch { return $null }
+    }
+    return $null
+}
+
+function Is-WorkingHours {
+    $cfg = Get-AppConfig
+    if (!$cfg) { return $false }
+
+    $now = Get-Date
+    $dayOfWeek = $now.DayOfWeek.ToString()
+
+    # Check if active day
+    if ($cfg.ActiveDays -notcontains $dayOfWeek) { return $false }
+
+    # Check if holiday
+    $todayStr = $now.ToString("yyyy-MM-dd")
+    if ($cfg.Holidays -contains $todayStr) { return $false }
+
+    # Check if working hours
+    $hour = $now.Hour
+    $minute = $now.Minute
+    $timeInMinutes = $hour * 60 + $minute
+
+    $startHour = $cfg.ActiveStartHour
+    $startMin = $cfg.ActiveStartMinuteMin
+    $startTime = $startHour * 60 + $startMin
+
+    $endHour = $cfg.ActiveEndHour
+    $endMin = $cfg.ActiveEndMinuteMin
+    if ($endMin -eq 0 -and $endHour -gt $startHour) {
+        $endMin = 59
+    }
+    $endTime = $endHour * 60 + $endMin
+
+    return ($timeInMinutes -ge $startTime -and $timeInMinutes -le $endTime)
+}
+
+function Run-PhantomCycle {
+    try {
+        if ($UseExtended) {
+            Write-Log "🚀 Running EXTENDED cycle..." "Green"
+            & "$scriptsDir\vscode-cycle-extended.ps1" -StayOpenSeconds 45
+        } else {
+            Write-Log "🚀 Running STANDARD cycle..." "Green"
+            & "$scriptsDir\vscode-cycle.ps1" -StayOpenSeconds 45
+        }
+        Write-Log "✅ Cycle completed successfully" "Green"
+        return $true
+    } catch {
+        Write-Log "❌ Cycle failed: $_" "Red"
+        return $false
+    }
+}
+
+function Get-SmartInterval {
+    $now = Get-Date
+    $hour = $now.Hour
+
+    # During working hours: every 5-10 minutes
+    if (Is-WorkingHours) { return (Get-Random -Minimum 5 -Maximum 10) }
+
+    # Early morning (5-8 AM): longer interval
+    if ($hour -ge 5 -and $hour -lt 8) { return (Get-Random -Minimum 20 -Maximum 40) }
+
+    # Evening (18-21): longer interval
+    if ($hour -ge 18 -and $hour -lt 21) { return (Get-Random -Minimum 30 -Maximum 60) }
+
+    # Night: minimal activity
+    return 120
+}
+
+function Show-Status {
+    $cfg = Get-AppConfig
+    if (!$cfg) { return }
+
+    $now = Get-Date
+    $isWorking = Is-WorkingHours
+    $status = if ($isWorking) { "WORKING HOURS 💼" } else { "OFF HOURS 😴" }
+
+    Write-Log "═════════════════════════════════════════════" "Cyan"
+    Write-Log "Status: $status" "Yellow"
+    Write-Log "Time: $($now.ToString('HH:mm:ss')) | Day: $($now.DayOfWeek)" "White"
+    Write-Log "Mode: $(if($UseExtended) { 'EXTENDED (4 apps)' } else { 'STANDARD (VS Code)' })" "White"
+    Write-Log "═════════════════════════════════════════════" "Cyan"
+}
+
+Write-Log "🟢 ALWAYS-ON MODE STARTED" "Green"
+Show-Status
+
+$cycleCount = 0
+$successCount = 0
+$startTime = Get-Date
+
+while ($true) {
+    $interval = Get-SmartInterval
+    $nextRun = (Get-Date).AddMinutes($interval)
+
+    $cycleCount++
+    Write-Log "Cycle #$cycleCount | Next run: $($nextRun.ToString('HH:mm')) (waiting $interval min)" "Cyan"
+
+    # Run cycle if working hours
+    if (Is-WorkingHours) {
+        $success = Run-PhantomCycle
+        if ($success) { $successCount++ }
+    } else {
+        Write-Log "⏸️  Skipping cycle - off hours" "DarkGray"
+    }
+
+    # Show stats every hour
+    if ($cycleCount % 12 -eq 0) {
+        $elapsed = (Get-Date) - $startTime
+        Write-Log "📊 Stats: $successCount successful cycles in $($elapsed.Hours)h $($elapsed.Minutes)m" "Yellow"
+    }
+
+    # Wait for next cycle with interruptible sleep
+    Start-Sleep -Seconds ($interval * 60)
+}

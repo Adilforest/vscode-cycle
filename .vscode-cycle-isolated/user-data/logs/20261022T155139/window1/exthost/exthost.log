@@ -1,0 +1,13 @@
+2026-10-22 15:51:40.755 [info] Extension host with pid 3348 started
+2026-10-22 15:51:40.756 [info] Skipping acquiring lock for c:\Users\ГГГ\Scripts\.vscode-cycle-isolated\user-data\User\workspaceStorage\79c57cabfec62f2e3edd0e1961df8952.
+2026-10-22 15:51:40.828 [info] ExtensionService#_doActivateExtension vscode.github-authentication, startup: false, activationEvent: 'onAuthenticationRequest:github'
+2026-10-22 15:51:40.848 [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onLanguage'
+2026-10-22 15:51:40.935 [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*'
+2026-10-22 15:51:40.956 [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+2026-10-22 15:51:40.970 [info] Eager extensions activated
+2026-10-22 15:51:40.970 [info] [node-compile-cache] extension-host: packaged cache enabled (status: enabled, configured: C:\Users\ГГГ\AppData\Local\Programs\Microsoft VS Code\2d0b7506a3\resources\app\node-compile-cache\extension-host, active: C:\Users\ГГГ\AppData\Local\Programs\Microsoft VS Code\2d0b7506a3\resources\app\node-compile-cache\extension-host\v24.21.0-x64-c3a7e8f2)
+2026-10-22 15:51:41.011 [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: false, activationEvent: 'onStartupFinished'
+2026-10-22 15:51:41.013 [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'
+2026-10-22 15:51:41.533 [info] ExtensionService#_doActivateExtension vscode.microsoft-authentication, startup: false, activationEvent: 'onAuthenticationRequest:microsoft'
+2026-10-22 15:52:11.316 [info] Extension host terminating: renderer closed the MessagePort
+2026-10-22 15:52:11.320 [info] Extension host with pid 3348 exiting with code 0

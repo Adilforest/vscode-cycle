@@ -1,0 +1,28 @@
+2026-10-22 15:55:41.847 [info] Agent Host process started successfully
+2026-10-22 15:55:41.868 [info] AgentService initialized
+2026-10-22 15:55:41.874 [info] Registering agent provider: copilotcli
+2026-10-22 15:55:41.875 [info] Registering agent provider: claude
+2026-10-22 15:55:41.875 [info] Registering agent provider: codex
+2026-10-22 15:55:41.879 [info] [Copilot] BYOK bridge changed; refreshing models
+2026-10-22 15:55:41.879 [info] [Copilot] BYOK bridge changed; refreshing models
+2026-10-22 15:55:41.895 [info] [Claude] Models refreshed (merged). Count: 0, 
+2026-10-22 15:55:41.910 [info] [Claude] SDK not downloaded yet; deferring the migratable chat list
+2026-10-22 15:55:41.914 [info] [CopilotDiscovery] Started: maxCandidateWatches=32, maxConcurrentStats=4, coalesceMs=500
+2026-10-22 15:55:41.914 [info] [AgentService] sessions_v2 import for provider copilotcli: 0 synchronized, 0 current, 0 excluded, 0 stale exclusions, 0 incomplete, 0 failed, marker set in 33ms (0 db opens, 0 db stats)
+2026-10-22 15:55:41.917 [info] [CopilotDiscovery] Scan 1 started: initial=true, candidates=0, reasons={}, watched=0, pending=0, ignoredHostEvents=0
+2026-10-22 15:55:41.917 [info] [Copilot] Listing discoverable chats...
+2026-10-22 15:55:41.918 [info] [Copilot] Starting CopilotClient...
+2026-10-22 15:55:41.918 [info] [Copilot] Set CLI env: GITHUB_COPILOT_INTEGRATION_ID=vscode-chat
+2026-10-22 15:55:41.918 [info] [Copilot] Enabled repository-size-gated tgrep indexed search
+2026-10-22 15:55:41.921 [info] [Copilot] Using bundled runtime path: c:\Users\ГГГ\AppData\Local\Programs\Microsoft VS Code\2d0b7506a3\resources\app\node_modules.asar.unpacked\@github\copilot-sdk-win32-x64\prebuilds\win32-x64\copilot-runtime.exe
+2026-10-22 15:55:41.930 [info] [CommandAutoApprover] Tree-sitter initialized (bash=available, powershell=available)
+2026-10-22 15:55:42.000 [info] [Copilot] CopilotClient started successfully
+2026-10-22 15:55:42.001 [info] [Copilot] Listed 0 SDK session(s) for discoverable chats
+2026-10-22 15:55:42.002 [info] [CopilotDiscovery] Scan 1 catalog: sdkSessions=0, candidates=0, listMs=84, classifyMs=1, published=0, external=0, legacy=0, known=0, disabledLegacy=0, archivedLegacy=0, missingCwd=0, unsupportedClient=0, stale=0, failed=0
+2026-10-22 15:55:42.002 [info] [CopilotDiscovery] Scan 1 finished: elapsedMs=85, completed=0, pending=0, watched=0, overflow=0, ignoredHostEvents=0
+2026-10-22 15:55:42.028 [info] [Copilot] BYOK bridge changed; refreshing models
+2026-10-22 15:55:42.072 [info] [WebSocketProtocol] Server listening on socket \\.\pipe\vscode-agent-host-48af8ae1530b5cf5f13ff1de5f3c084b8427fc3a2d0aea13f67b01a8ff790798-p49NU-zQ9SKuWCgkKj9Njg
+2026-10-22 15:55:42.147 [info] [ProtocolServer] Initialize: clientId=83e00a42-4c2b-4d90-bb70-6d361d17ff19, protocolVersions=[1.0.0, 0.10.0, 0.9.0]
+2026-10-22 15:55:42.248 [info] [node-compile-cache] agent-host: packaged cache enabled (status: enabled, configured: C:\Users\ГГГ\AppData\Local\Programs\Microsoft VS Code\2d0b7506a3\resources\app\node-compile-cache\agent-host, active: C:\Users\ГГГ\AppData\Local\Programs\Microsoft VS Code\2d0b7506a3\resources\app\node-compile-cache\agent-host\v24.21.0-x64-c3a7e8f2)
+2026-10-22 15:55:42.630 [info] [AgentService] pruned 0 stale external session row(s) older than 30 days
+2026-10-22 15:55:42.631 [info] [Claude] SDK not downloaded yet; deferring chat discovery

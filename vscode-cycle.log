@@ -1,0 +1,400 @@
+﻿[2026-10-23 12:00:00] ==================== PHANTOM ACTIVITY SYSTEM REINITIALIZED ====================
+[2026-10-23 12:00:00] Version: 4.1 Fixed
+[2026-10-23 12:00:00] Web Server: FIXED - Async GetContext pattern
+[2026-10-23 12:00:00] VBS Launcher: FIXED - Dynamic path resolution
+[2026-10-23 12:00:00] Logging: FIXED - Retry mechanism for file locks
+[2026-10-23 12:00:00] All systems ready for operation
+[2026-10-23 12:00:00] ================================================================================
+[2026-10-23 14:19:16] Cycle #6 | Next run: 14:27 (waiting 8 min)
+[2026-10-23 14:19:16] [RUN] Running STANDARD cycle...
+2026-10-23 14:19:16  Starting isolated VS Code instance...
+2026-10-23 14:19:16  Opening project: C:\Users\ГГГ\Desktop\situation-centre-arm-backend
+2026-10-23 14:19:16  Opening file: C:\Users\ГГГ\Desktop\situation-centre-arm-backend\manage.py
+2026-10-23 14:19:16  VS Code started, simulating phantom typing activity...
+2026-10-23 14:19:31  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:19:31  Starting realistic code typing simulation...
+2026-10-23 14:19:32  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:20:15  Closing isolated VS Code instance...
+2026-10-23 14:20:15  Cycle complete.
+[2026-10-23 14:20:15] [OK] Cycle completed successfully
+[2026-10-23 14:22:25] FATAL ERROR: Failed to start HTTP listener: Исключение при вызове "Start" с "0" аргументами: "Прослушивание префикса 'http://+:5000/' невозможно, так как он вступает в конфликт с существующей регистрацией на этом компьютере."
+[2026-10-23 14:23:15] FATAL ERROR: Failed to start HTTP listener: Исключение при вызове "Start" с "0" аргументами: "Отказано в доступе"
+[2026-10-23 14:25:12] FATAL ERROR: Failed to start HTTP listener: Исключение при вызове "Start" с "0" аргументами: "Отказано в доступе"
+[2026-10-23 14:25:18] FATAL ERROR: Failed to start HTTP listener: Исключение при вызове "Start" с "0" аргументами: "Отказано в доступе"
+[2026-10-23 14:25:32] [OK] Web Server STARTED on port 8080
+[2026-10-23 14:28:15] Cycle #7 | Next run: 14:36 (waiting 8 min)
+[2026-10-23 14:28:15] [RUN] Running STANDARD cycle...
+2026-10-23 14:28:15  Starting isolated VS Code instance...
+2026-10-23 14:28:15  Opening project: C:\Users\ГГГ\Desktop\situation-centre-arm-backend
+2026-10-23 14:28:15  Opening file: C:\Users\ГГГ\Desktop\situation-centre-arm-backend\manage.py
+2026-10-23 14:28:15  VS Code started, simulating phantom typing activity...
+2026-10-23 14:28:31  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:28:31  Starting realistic code typing simulation...
+2026-10-23 14:28:31  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:29:14  Closing isolated VS Code instance...
+2026-10-23 14:29:14  Cycle complete.
+[2026-10-23 14:29:14] [OK] Cycle completed successfully
+[2026-10-23 14:37:15] Cycle #8 | Next run: 14:43 (waiting 6 min)
+[2026-10-23 14:37:15] [RUN] Running STANDARD cycle...
+2026-10-23 14:37:15  Starting isolated VS Code instance...
+2026-10-23 14:37:15  Opening project: C:\Users\ГГГ\Desktop\situation-centre-arm-backend
+2026-10-23 14:37:15  Opening file: C:\Users\ГГГ\Desktop\situation-centre-arm-backend\manage.py
+2026-10-23 14:37:15  VS Code started, simulating phantom typing activity...
+2026-10-23 14:37:30  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:37:30  Starting realistic code typing simulation...
+2026-10-23 14:37:31  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:38:14  Closing isolated VS Code instance...
+2026-10-23 14:38:14  Cycle complete.
+[2026-10-23 14:38:14] [OK] Cycle completed successfully
+2026-10-23 14:42:36  
+2026-10-23 14:42:36  =================================================================
+2026-10-23 14:42:36   EXTENDED PHANTOM ACTIVITY CYCLE STARTED
+2026-10-23 14:42:36  =================================================================
+2026-10-23 14:42:36  
+2026-10-23 14:42:36  PHASE 1: VS Code Development
+2026-10-23 14:42:36  Opening isolated VS Code instance with project...
+2026-10-23 14:42:52  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:42:52  Starting code editing simulation...
+2026-10-23 14:42:52  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:42:55  
+2026-10-23 14:42:55  PHASE 2: Planfix Kanban Board
+2026-10-23 14:42:55  Opening Planfix (Kanban board)...
+2026-10-23 14:42:58  Simulating Planfix actions...
+2026-10-23 14:42:58  Planfix actions skipped - its browser tab is not in the foreground
+2026-10-23 14:43:02  Fetching Planfix tasks via API...
+2026-10-23 14:43:03  WARNING: Planfix API call failed: 
+
+
+Error 404 Not Found
+
+
+HTTP ERROR 404 Not Found
+
+URI:http://robosoft.planfix.com/rest/api/v3/tasks?account=robosoft&amp;limit=10
+STATUS:404
+MESSAGE:Not Found
+
+Powered by Jetty:// 12.1.13
+
+
+
+
+2026-10-23 14:43:06  
+2026-10-23 14:43:06  PHASE 3: GitLab Repository
+2026-10-23 14:43:06  Opening GitLab repository...
+2026-10-23 14:43:09  Simulating GitLab actions (browsing code)...
+2026-10-23 14:43:09  GitLab actions skipped - its browser tab is not in the foreground
+2026-10-23 14:43:13  
+2026-10-23 14:43:13  PHASE 4: Terminal Git Operations
+2026-10-23 14:43:13  Opening PowerShell Terminal...
+2026-10-23 14:43:15  Simulating Git operations in terminal...
+2026-10-23 14:43:15  Terminal simulation skipped - its window is not in the foreground
+2026-10-23 14:43:18  
+2026-10-23 14:43:18  Closing VS Code instance...
+2026-10-23 14:43:18  
+2026-10-23 14:43:18  =================================================================
+2026-10-23 14:43:18   EXTENDED CYCLE COMPLETED SUCCESSFULLY
+2026-10-23 14:43:18  =================================================================
+2026-10-23 14:43:18  
+[2026-10-23 14:44:14] Cycle #9 | Next run: 14:50 (waiting 6 min)
+[2026-10-23 14:44:14] [RUN] Running STANDARD cycle...
+2026-10-23 14:44:14  Starting isolated VS Code instance...
+2026-10-23 14:44:14  Opening project: C:\Users\ГГГ\Desktop\situation-centre-arm-backend
+2026-10-23 14:44:14  Opening file: C:\Users\ГГГ\Desktop\situation-centre-arm-backend\manage.py
+2026-10-23 14:44:14  VS Code started, simulating phantom typing activity...
+2026-10-23 14:44:29  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:44:29  Starting realistic code typing simulation...
+2026-10-23 14:44:29  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:45:12  Closing isolated VS Code instance...
+2026-10-23 14:45:13  Cycle complete.
+[2026-10-23 14:45:13] [OK] Cycle completed successfully
+[2026-10-23 14:48:31] [API] GET /api/stop
+[2026-10-23 14:48:31] [STOP] Stopped activity PID=29420
+[2026-10-23 14:49:08] [API] POST /api/config
+[2026-10-23 14:49:08] [CONFIG] Updated: ActiveDays, ActiveEndHour, ActiveEndMinuteMax, ActiveEndMinuteMin, ActiveStartHour, ActiveStartMinuteMax, ActiveStartMinuteMin, Enabled, Holidays, IntervalMinutes, LunchEndHour, LunchEndMinuteMax, LunchEndMinuteMin, LunchStartHour, LunchStartMinuteMax, LunchStartMinuteMin, StayOpenSeconds
+[2026-10-23 14:49:17] [API] GET /api/start
+[2026-10-23 14:49:17] [START] Starting activity: Mode=extended
+[2026-10-23 14:49:17] [START] ALWAYS-ON MODE STARTED
+[2026-10-23 14:49:18] =============================================
+[2026-10-23 14:49:18] Status: WORKING HOURS
+[2026-10-23 14:49:18] Time: 14:49:18 | Day: Friday
+[2026-10-23 14:49:18] Mode: EXTENDED (4 apps)
+[2026-10-23 14:49:18] =============================================
+[2026-10-23 14:49:18] Cycle #1 | Next run: 14:50 (waiting 1 min)
+[2026-10-23 14:49:18] [RUN] Running EXTENDED cycle...
+2026-10-23 14:49:18  
+2026-10-23 14:49:18  =================================================================
+2026-10-23 14:49:18   EXTENDED PHANTOM ACTIVITY CYCLE STARTED
+2026-10-23 14:49:18  =================================================================
+2026-10-23 14:49:18  
+2026-10-23 14:49:18  PHASE 1: VS Code Development
+2026-10-23 14:49:18  Opening isolated VS Code instance with project...
+[2026-10-23 14:49:19] [OK] Activity running PID=15592 Mode=extended
+2026-10-23 14:49:34  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:49:34  Starting code editing simulation...
+2026-10-23 14:49:34  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:49:37  
+2026-10-23 14:49:37  PHASE 2: Planfix Kanban Board
+2026-10-23 14:49:37  Opening Planfix (Kanban board)...
+2026-10-23 14:49:40  Simulating Planfix actions...
+2026-10-23 14:49:40  Planfix actions skipped - its browser tab is not in the foreground
+2026-10-23 14:49:44  Fetching Planfix tasks via API...
+2026-10-23 14:49:45  WARNING: Planfix API call failed: 
+
+
+Error 404 Not Found
+
+
+HTTP ERROR 404 Not Found
+
+URI:http://robosoft.planfix.com/rest/api/v3/tasks?account=robosoft&amp;limit=10
+STATUS:404
+MESSAGE:Not Found
+
+Powered by Jetty:// 12.1.13
+
+
+
+
+2026-10-23 14:49:48  
+2026-10-23 14:49:48  PHASE 3: GitLab Repository
+2026-10-23 14:49:48  Opening GitLab repository...
+2026-10-23 14:49:51  Simulating GitLab actions (browsing code)...
+2026-10-23 14:49:51  GitLab actions skipped - its browser tab is not in the foreground
+2026-10-23 14:49:55  
+2026-10-23 14:49:55  PHASE 4: Terminal Git Operations
+2026-10-23 14:49:55  Opening PowerShell Terminal...
+2026-10-23 14:49:57  Simulating Git operations in terminal...
+2026-10-23 14:49:57  Terminal simulation skipped - its window is not in the foreground
+2026-10-23 14:50:00  
+2026-10-23 14:50:00  Closing VS Code instance...
+2026-10-23 14:50:00  
+2026-10-23 14:50:00  =================================================================
+2026-10-23 14:50:00   EXTENDED CYCLE COMPLETED SUCCESSFULLY
+2026-10-23 14:50:00  =================================================================
+2026-10-23 14:50:00  
+[2026-10-23 14:50:00] [OK] Cycle completed successfully
+[2026-10-23 14:51:00] Cycle #2 | Next run: 14:52 (waiting 1 min)
+[2026-10-23 14:51:00] [RUN] Running EXTENDED cycle...
+2026-10-23 14:51:01  
+2026-10-23 14:51:01  =================================================================
+2026-10-23 14:51:01   EXTENDED PHANTOM ACTIVITY CYCLE STARTED
+2026-10-23 14:51:01  =================================================================
+2026-10-23 14:51:01  
+2026-10-23 14:51:01  PHASE 1: VS Code Development
+2026-10-23 14:51:01  Opening isolated VS Code instance with project...
+2026-10-23 14:51:16  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:51:16  Starting code editing simulation...
+2026-10-23 14:51:16  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:51:19  
+2026-10-23 14:51:19  PHASE 2: Planfix Kanban Board
+2026-10-23 14:51:19  Opening Planfix (Kanban board)...
+2026-10-23 14:51:22  Simulating Planfix actions...
+2026-10-23 14:51:22  Planfix actions skipped - its browser tab is not in the foreground
+2026-10-23 14:51:26  Fetching Planfix tasks via API...
+2026-10-23 14:51:27  WARNING: Planfix API call failed: 
+
+
+Error 404 Not Found
+
+
+HTTP ERROR 404 Not Found
+
+URI:http://robosoft.planfix.com/rest/api/v3/tasks?account=robosoft&amp;limit=10
+STATUS:404
+MESSAGE:Not Found
+
+Powered by Jetty:// 12.1.13
+
+
+
+
+2026-10-23 14:51:30  
+2026-10-23 14:51:30  PHASE 3: GitLab Repository
+2026-10-23 14:51:30  Opening GitLab repository...
+2026-10-23 14:51:33  Simulating GitLab actions (browsing code)...
+2026-10-23 14:51:33  GitLab actions skipped - its browser tab is not in the foreground
+2026-10-23 14:51:37  
+2026-10-23 14:51:37  PHASE 4: Terminal Git Operations
+2026-10-23 14:51:37  Opening PowerShell Terminal...
+2026-10-23 14:51:40  Simulating Git operations in terminal...
+2026-10-23 14:51:40  Terminal simulation skipped - its window is not in the foreground
+2026-10-23 14:51:43  
+2026-10-23 14:51:43  Closing VS Code instance...
+2026-10-23 14:51:43  
+2026-10-23 14:51:43  =================================================================
+2026-10-23 14:51:43   EXTENDED CYCLE COMPLETED SUCCESSFULLY
+2026-10-23 14:51:43  =================================================================
+2026-10-23 14:51:43  
+[2026-10-23 14:51:43] [OK] Cycle completed successfully
+[2026-10-23 14:52:43] Cycle #3 | Next run: 14:53 (waiting 1 min)
+[2026-10-23 14:52:43] [RUN] Running EXTENDED cycle...
+2026-10-23 14:52:43  
+2026-10-23 14:52:43  =================================================================
+2026-10-23 14:52:43   EXTENDED PHANTOM ACTIVITY CYCLE STARTED
+2026-10-23 14:52:43  =================================================================
+2026-10-23 14:52:43  
+2026-10-23 14:52:43  PHASE 1: VS Code Development
+2026-10-23 14:52:43  Opening isolated VS Code instance with project...
+2026-10-23 14:52:58  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:52:58  Starting code editing simulation...
+2026-10-23 14:52:58  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:53:01  
+2026-10-23 14:53:01  PHASE 2: Planfix Kanban Board
+2026-10-23 14:53:01  Opening Planfix (Kanban board)...
+2026-10-23 14:53:04  Simulating Planfix actions...
+2026-10-23 14:53:04  Planfix actions skipped - its browser tab is not in the foreground
+2026-10-23 14:53:08  Fetching Planfix tasks via API...
+2026-10-23 14:53:09  WARNING: Planfix API call failed: 
+
+
+Error 404 Not Found
+
+
+HTTP ERROR 404 Not Found
+
+URI:http://robosoft.planfix.com/rest/api/v3/tasks?account=robosoft&amp;limit=10
+STATUS:404
+MESSAGE:Not Found
+
+Powered by Jetty:// 12.1.13
+
+
+
+
+2026-10-23 14:53:12  
+2026-10-23 14:53:12  PHASE 3: GitLab Repository
+2026-10-23 14:53:12  Opening GitLab repository...
+2026-10-23 14:53:15  Simulating GitLab actions (browsing code)...
+2026-10-23 14:53:15  GitLab actions skipped - its browser tab is not in the foreground
+2026-10-23 14:53:19  
+2026-10-23 14:53:19  PHASE 4: Terminal Git Operations
+2026-10-23 14:53:19  Opening PowerShell Terminal...
+2026-10-23 14:53:21  Simulating Git operations in terminal...
+2026-10-23 14:53:21  Terminal simulation skipped - its window is not in the foreground
+2026-10-23 14:53:24  
+2026-10-23 14:53:24  Closing VS Code instance...
+2026-10-23 14:53:24  
+2026-10-23 14:53:24  =================================================================
+2026-10-23 14:53:24   EXTENDED CYCLE COMPLETED SUCCESSFULLY
+2026-10-23 14:53:24  =================================================================
+2026-10-23 14:53:24  
+[2026-10-23 14:53:24] [OK] Cycle completed successfully
+[2026-10-23 14:54:24] Cycle #4 | Next run: 14:55 (waiting 1 min)
+[2026-10-23 14:54:24] [RUN] Running EXTENDED cycle...
+2026-10-23 14:54:24  
+2026-10-23 14:54:24  =================================================================
+2026-10-23 14:54:24   EXTENDED PHANTOM ACTIVITY CYCLE STARTED
+2026-10-23 14:54:24  =================================================================
+2026-10-23 14:54:24  
+2026-10-23 14:54:24  PHASE 1: VS Code Development
+2026-10-23 14:54:24  Opening isolated VS Code instance with project...
+2026-10-23 14:54:40  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:54:40  Starting code editing simulation...
+2026-10-23 14:54:40  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:54:43  
+2026-10-23 14:54:43  PHASE 2: Planfix Kanban Board
+2026-10-23 14:54:43  Opening Planfix (Kanban board)...
+2026-10-23 14:54:46  Simulating Planfix actions...
+2026-10-23 14:54:46  Planfix actions skipped - its browser tab is not in the foreground
+2026-10-23 14:54:50  Fetching Planfix tasks via API...
+2026-10-23 14:54:50  WARNING: Planfix API call failed: 
+
+
+Error 404 Not Found
+
+
+HTTP ERROR 404 Not Found
+
+URI:http://robosoft.planfix.com/rest/api/v3/tasks?account=robosoft&amp;limit=10
+STATUS:404
+MESSAGE:Not Found
+
+Powered by Jetty:// 12.1.13
+
+
+
+
+2026-10-23 14:54:53  
+2026-10-23 14:54:53  PHASE 3: GitLab Repository
+2026-10-23 14:54:53  Opening GitLab repository...
+2026-10-23 14:54:56  Simulating GitLab actions (browsing code)...
+2026-10-23 14:54:59  GitLab phantom actions completed
+2026-10-23 14:55:03  
+2026-10-23 14:55:03  PHASE 4: Terminal Git Operations
+2026-10-23 14:55:03  Opening PowerShell Terminal...
+2026-10-23 14:55:05  Simulating Git operations in terminal...
+2026-10-23 14:55:05  Terminal simulation skipped - its window is not in the foreground
+2026-10-23 14:55:08  
+2026-10-23 14:55:08  Closing VS Code instance...
+2026-10-23 14:55:08  
+2026-10-23 14:55:08  =================================================================
+2026-10-23 14:55:08   EXTENDED CYCLE COMPLETED SUCCESSFULLY
+2026-10-23 14:55:08  =================================================================
+2026-10-23 14:55:08  
+[2026-10-23 14:55:08] [OK] Cycle completed successfully
+[2026-10-23 14:56:08] Cycle #5 | Next run: 14:57 (waiting 1 min)
+[2026-10-23 14:56:08] [RUN] Running EXTENDED cycle...
+2026-10-23 14:56:08  
+2026-10-23 14:56:08  =================================================================
+2026-10-23 14:56:08   EXTENDED PHANTOM ACTIVITY CYCLE STARTED
+2026-10-23 14:56:08  =================================================================
+2026-10-23 14:56:08  
+2026-10-23 14:56:08  PHASE 1: VS Code Development
+2026-10-23 14:56:08  Opening isolated VS Code instance with project...
+2026-10-23 14:56:24  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:56:24  Starting code editing simulation...
+2026-10-23 14:56:24  Typing skipped - VS Code was never the foreground window
+2026-10-23 14:56:27  
+2026-10-23 14:56:27  PHASE 2: Planfix Kanban Board
+2026-10-23 14:56:27  Opening Planfix (Kanban board)...
+2026-10-23 14:56:30  Simulating Planfix actions...
+2026-10-23 14:56:30  Planfix actions skipped - its browser tab is not in the foreground
+2026-10-23 14:56:34  Fetching Planfix tasks via API...
+2026-10-23 14:56:34  WARNING: Planfix API call failed: 
+
+
+Error 404 Not Found
+
+
+HTTP ERROR 404 Not Found
+
+URI:http://robosoft.planfix.com/rest/api/v3/tasks?account=robosoft&amp;limit=10
+STATUS:404
+MESSAGE:Not Found
+
+Powered by Jetty:// 12.1.13
+
+
+
+
+2026-10-23 14:56:37  
+2026-10-23 14:56:37  PHASE 3: GitLab Repository
+2026-10-23 14:56:37  Opening GitLab repository...
+2026-10-23 14:56:40  Simulating GitLab actions (browsing code)...
+2026-10-23 14:56:43  GitLab phantom actions completed
+2026-10-23 14:56:47  
+2026-10-23 14:56:47  PHASE 4: Terminal Git Operations
+2026-10-23 14:56:47  Opening PowerShell Terminal...
+2026-10-23 14:56:49  Simulating Git operations in terminal...
+2026-10-23 14:56:49  Terminal simulation skipped - its window is not in the foreground
+2026-10-23 14:56:52  
+2026-10-23 14:56:52  Closing VS Code instance...
+2026-10-23 14:56:52  
+2026-10-23 14:56:52  =================================================================
+2026-10-23 14:56:52   EXTENDED CYCLE COMPLETED SUCCESSFULLY
+2026-10-23 14:56:52  =================================================================
+2026-10-23 14:56:52  
+[2026-10-23 14:56:52] [OK] Cycle completed successfully
+[2026-10-23 14:57:52] Cycle #6 | Next run: 14:58 (waiting 1 min)
+[2026-10-23 14:57:52] [RUN] Running EXTENDED cycle...
+2026-10-23 14:57:52  
+2026-10-23 14:57:52  =================================================================
+2026-10-23 14:57:52   EXTENDED PHANTOM ACTIVITY CYCLE STARTED
+2026-10-23 14:57:52  =================================================================
+2026-10-23 14:57:52  
+2026-10-23 14:57:52  PHASE 1: VS Code Development
+2026-10-23 14:57:52  Opening isolated VS Code instance with project...
+2026-10-23 14:58:08  VS Code window is hidden - keys are not sent (they would reach another window)
+2026-10-23 14:58:08  Starting code editing simulation...
+2026-10-23 14:58:08  Typing skipped - VS Code was never the foreground window

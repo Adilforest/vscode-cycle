@@ -1,0 +1,11 @@
+2026-10-22 15:42:10.775 [info] [getSessions] [all] starting
+2026-10-22 15:42:10.775 [info] [getSessions] [all] returned 0 session(s)
+2026-10-22 15:42:10.775 [info] [getSessions] [all] starting
+2026-10-22 15:42:10.775 [info] [getSessions] [all] returned 0 session(s)
+2026-10-22 15:42:10.775 [info] [getSessions] [all] starting
+2026-10-22 15:42:10.775 [info] [getSessions] [all] returned 0 session(s)
+2026-10-22 15:42:10.776 [info] [getSessions] [12f6db80-0741-4a7e-b9c5-b85d737b3a31/.default] starting
+2026-10-22 15:42:10.776 [info] [aebc6443-996d-45c2-90f0-388ff96faa56] Native Broker enabled: true
+2026-10-22 15:42:10.806 [info] [getSessionsIncludingUnapprovedAccounts] [12f6db80-0741-4a7e-b9c5-b85d737b3a31/.default] returned 0 of 0 session(s)
+2026-10-22 15:42:12.165 [info] [getSessions] [all] starting
+2026-10-22 15:42:12.165 [info] [getSessions] [all] returned 0 session(s)

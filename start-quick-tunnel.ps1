@@ -1,0 +1,212 @@
+# Phantom Activity - Quick Tunnel
+# Starts a Cloudflare Quick Tunnel to the local web server, records the public
+# URL, and keeps running for as long as the tunnel lives.
+#
+# Staying in the foreground matters: when this script is launched by the
+# scheduled task and exits immediately, Task Scheduler tears down the task's
+# job object and kills cloudflared with it (seen as "signal terminated").
+# Waiting here keeps the task - and therefore the tunnel - alive.
+#
+# A Quick Tunnel needs no domain, but Cloudflare assigns a NEW random URL on
+# every start. The current URL is always written to remote-url.txt.
+
+param(
+    [int]$Port = 5000,
+    [string]$ApiKey = "cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d",
+    [switch]$NoWait,
+    [int]$MaxRestarts = 100
+)
+
+$username = $env:USERNAME
+$scriptsDir = "C:\Users\$username\Scripts"
+$urlFile = "$scriptsDir\remote-url.txt"
+$tunnelLog = "$scriptsDir\tunnel.log"
+$quickConfig = "$scriptsDir\quick-tunnel-config.yml"
+
+$cloudflared = "C:\Program Files (x86)\cloudflared\cloudflared.exe"
+if (-not (Test-Path $cloudflared)) {
+    $cloudflared = "C:\Program Files\cloudflared\cloudflared.exe"
+}
+if (-not (Test-Path $cloudflared)) {
+    Write-Host "[ERROR] cloudflared.exe not found" -ForegroundColor Red
+    exit 1
+}
+
+# An isolated config is required. Without --config, cloudflared picks up
+# ~\.cloudflared\config.yml, which describes the named tunnel "phantom-farm";
+# its credentials-file then leaks into the quick tunnel run and Cloudflare
+# answers 404 at the edge instead of routing to this machine.
+if (-not (Test-Path $quickConfig)) {
+    Set-Content -Path $quickConfig -Value "no-autoupdate: true" -Encoding UTF8
+}
+
+function Write-TunnelLog {
+    param([string]$Message)
+    $line = "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] [TUNNEL] $Message"
+    for ($i = 0; $i -lt 5; $i++) {
+        try {
+            Add-Content -Path "$scriptsDir\vscode-cycle.log" -Value $line -ErrorAction Stop
+            break
+        } catch {
+            Start-Sleep -Milliseconds 120
+        }
+    }
+    Write-Host $line -ForegroundColor Cyan
+}
+
+Write-Host ""
+Write-Host "====================================================================" -ForegroundColor Cyan
+Write-Host "[TUNNEL] Phantom Activity - Cloudflare Quick Tunnel" -ForegroundColor Cyan
+Write-Host "====================================================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Only one copy may manage the tunnel. A second copy would stop the first one's
+# cloudflared below, and the two would then keep replacing each other's tunnel,
+# changing the link every time.
+$script:tunnelMutex = New-Object System.Threading.Mutex($false, "Local\PhantomActivityQuickTunnel")
+$ownsTunnel = $false
+try {
+    $ownsTunnel = $script:tunnelMutex.WaitOne(0)
+} catch [System.Threading.AbandonedMutexException] {
+    # The previous owner died without releasing it; the mutex is ours now
+    $ownsTunnel = $true
+}
+if (-not $ownsTunnel) {
+    Write-Host "[INFO] Another copy of this script already manages the tunnel - exiting" -ForegroundColor Yellow
+    Write-Host "       The current link is in $urlFile" -ForegroundColor Gray
+    exit 0
+}
+
+# Stop quick tunnels left over from an earlier run so the URL file stays
+# accurate. A named tunnel (no --url) is not ours to stop.
+Get-CimInstance Win32_Process -Filter "Name='cloudflared.exe'" -ErrorAction SilentlyContinue |
+    Where-Object { $_.CommandLine -match '--url' } |
+    ForEach-Object {
+        Write-Host "[STOP] Terminating leftover quick tunnel PID $($_.ProcessId)" -ForegroundColor Yellow
+        Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+Start-Sleep -Seconds 2
+
+# Wait for the local web server to answer before exposing it
+$serverReady = $false
+for ($i = 0; $i -lt 30; $i++) {
+    try {
+        [void](Invoke-WebRequest -Uri "http://127.0.0.1:$Port/api/health?key=$ApiKey" -UseBasicParsing -TimeoutSec 3)
+        $serverReady = $true
+        break
+    } catch {
+        Start-Sleep -Seconds 2
+    }
+}
+
+if ($serverReady) {
+    Write-Host "[OK] Local web server is responding on port $Port" -ForegroundColor Green
+} else {
+    Write-Host "[WARN] Web server did not answer; starting tunnel anyway" -ForegroundColor Yellow
+}
+
+function Start-QuickTunnel {
+    # Keep the previous run so the reason it stopped is not lost on restart
+    if (Test-Path $tunnelLog) { Move-Item $tunnelLog "$tunnelLog.prev" -Force -ErrorAction SilentlyContinue }
+
+    $proc = Start-Process -FilePath $cloudflared `
+        -ArgumentList @("--config", "`"$quickConfig`"", "tunnel", "--url", "http://127.0.0.1:$Port") `
+        -PassThru -WindowStyle Hidden `
+        -RedirectStandardError $tunnelLog `
+        -RedirectStandardOutput "$scriptsDir\tunnel-out.log"
+
+    # Hidden, not Minimized: a minimized console can become the active window and
+    # receive the Ctrl+C sent by the typing simulation, which shuts the tunnel down.
+
+    # Touch the handle now so ExitCode is still readable after the process exits
+    $null = $proc.Handle
+
+    # Pull the public URL out of the log
+    $publicUrl = $null
+    for ($i = 0; $i -lt 45; $i++) {
+        Start-Sleep -Seconds 2
+        if (Test-Path $tunnelLog) {
+            $text = Get-Content $tunnelLog -Raw -ErrorAction SilentlyContinue
+            # api.trycloudflare.com appears in the log when the tunnel request fails
+            if ($text -match 'https://(?!api\.)[a-z0-9-]+\.trycloudflare\.com') {
+                $publicUrl = $matches[0]
+                break
+            }
+        }
+        $proc.Refresh()
+        if ($proc.HasExited) { break }
+    }
+
+    return @{ Process = $proc; Url = $publicUrl }
+}
+
+$restarts = 0
+
+while ($true) {
+    $started = Start-QuickTunnel
+    $proc = $started.Process
+    $publicUrl = $started.Url
+
+    if (-not $publicUrl) {
+        Write-TunnelLog "Failed to obtain a tunnel URL. See tunnel.log"
+        if (-not $proc.HasExited) { Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue }
+        if ($NoWait) { exit 1 }
+
+        $restarts++
+        if ($restarts -gt $MaxRestarts) { exit 1 }
+        Start-Sleep -Seconds 30
+        continue
+    }
+
+    $remoteLink = "$publicUrl/?key=$ApiKey"
+
+    $content = @(
+        "Phantom Activity - Remote Access URL"
+        "Generated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+        "Tunnel PID: $($proc.Id)"
+        ""
+        "REMOTE CONTROL LINK:"
+        $remoteLink
+        ""
+        "NOTE: this URL changes every time the tunnel restarts."
+    )
+    Set-Content -Path $urlFile -Value $content -Encoding UTF8
+
+    Write-TunnelLog "Tunnel up (PID $($proc.Id)): $publicUrl"
+
+    Write-Host ""
+    Write-Host "[OK] Tunnel is up (PID $($proc.Id))" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "REMOTE CONTROL LINK:" -ForegroundColor Yellow
+    Write-Host "  $remoteLink" -ForegroundColor White
+    Write-Host ""
+    Write-Host "Saved to: $urlFile" -ForegroundColor Gray
+    Write-Host ""
+
+    if ($NoWait) {
+        Write-Host "[INFO] -NoWait given; leaving the tunnel running and exiting" -ForegroundColor Gray
+        break
+    }
+
+    # Hold the process tree open; if cloudflared dies, bring it back with a new URL
+    $upSince = Get-Date
+    $proc.WaitForExit()
+
+    # The limit is meant to stop a crash loop, not to end a tunnel that has been
+    # healthy for hours, so a long run resets the count
+    if (((Get-Date) - $upSince).TotalMinutes -ge 10) { $restarts = 0 }
+    $restarts++
+    if ($restarts -gt $MaxRestarts) {
+        Write-TunnelLog "Tunnel exited and the restart limit of $MaxRestarts was reached"
+        break
+    }
+
+    $reason = ""
+    if (Test-Path $tunnelLog) {
+        $last = Get-Content $tunnelLog -ErrorAction SilentlyContinue |
+            Where-Object { $_ -match "signal|ERR " } | Select-Object -Last 1
+        if ($last) { $reason = " - " + ($last -replace '^\S+\s+', '') }
+    }
+    Write-TunnelLog "Tunnel exited (code $($proc.ExitCode))$reason; restarting in 10 seconds"
+    Start-Sleep -Seconds 10
+}

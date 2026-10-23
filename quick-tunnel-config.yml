@@ -1,0 +1,4 @@
+# Isolated config for the Cloudflare Quick Tunnel.
+# Kept separate from C:\Users\<user>\.cloudflared\config.yml, which describes the
+# named tunnel "phantom-farm" and must not be mixed into a quick tunnel run.
+no-autoupdate: true

@@ -1,0 +1,223 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║       PHANTOM ACTIVITY SYSTEM v4.1 - FIXED & READY TO USE                  ║
+║              24/7 Farm Activity Monitor with Web API                        ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+📋 WHAT WAS FIXED IN v4.1
+═══════════════════════════════════════════════════════════════════════════
+
+1. ✅ VBS Launcher Dynamic Path Fix
+   - ISSUE: vscode-cycle-launcher.vbs had hardcoded "RoboSoft" username
+   - FIX: Now uses dynamic path resolution with %USERPROFILE%
+
+2. ✅ Web Server HTTP Listener Fix
+   - ISSUE: GetContext() was causing "denied" errors and crashes
+   - FIX: Implemented async pattern with timeout to prevent blocking
+
+3. ✅ File Locking & Encoding Issues
+   - ISSUE: Log file had encoding problems and lock contention
+   - FIX: Added retry mechanism with UTF-8 encoding, new clean log
+
+4. ✅ Web Server Error Handling
+   - ISSUE: Unhandled exceptions in response handler
+   - FIX: Added try-catch blocks, proper resource cleanup, better error messages
+
+
+🚀 QUICK START GUIDE
+═══════════════════════════════════════════════════════════════════════════
+
+Option 1: Full System Start (Recommended)
+─────────────────────────────────────
+1. Run PowerShell as Administrator
+2. Execute: C:\Users\%USERNAME%\Scripts\start-system.ps1
+3. This will start:
+   - Main menu (interactive dashboard)
+   - System tray icon (24/7 monitoring)
+   - Web server (for Cloudflare Tunnel access)
+
+Option 2: Web Server Only (For Remote Access)
+──────────────────────────────────────────
+1. Run PowerShell as Administrator
+2. Execute:
+   C:\Users\%USERNAME%\Scripts\start-system.ps1 -WebServerOnly
+3. Access at: http://localhost:5000/
+4. API Key is shown in terminal output
+
+
+📂 FILE STRUCTURE
+═════════════════════════════════════════════════════════════════════════════
+
+C:\Users\%USERNAME%\Scripts\
+├── vscode-cycle.config.json          ← Main configuration
+├── vscode-cycle.log                  ← Activity log (UTF-8 clean)
+├── phantom-activity-status.json      ← Runtime status
+├── remote-url.txt                    ← Cloudflare tunnel URL
+│
+├── start-system.ps1                  ← Main startup script (NEW)
+├── phantom-activity-main.ps1         ← Interactive dashboard
+├── phantom-activity-webserver.ps1    ← Web API (FIXED)
+├── phantom-activity-alwayson.ps1     ← Background cycling
+├── vscode-cycle-tray.ps1             ← System tray icon
+│
+├── vscode-cycle-launcher.vbs         ← Auto-launcher (FIXED)
+├── vscode-cycle.ps1                  ← VS Code cycling script
+└── backup-encoding-fix-20261023\     ← Old backup files
+
+
+⚙️  CONFIGURATION (vscode-cycle.config.json)
+═════════════════════════════════════════════════════════════════════════════
+
+{
+    "Enabled": true,
+    "ActiveStartHour": 8,              ← Start of work hours
+    "ActiveStartMinuteMin": 25,        ← Random start (25-48 min)
+    "ActiveStartMinuteMax": 48,
+    "ActiveEndHour": 18,               ← End of work hours
+    "ActiveEndMinuteMin": 58,          ← Random end (58-00 min)
+    "ActiveEndMinuteMax": 0,
+    "LunchStartHour": 13,              ← Lunch break
+    "LunchStartMinuteMin": 0,
+    "LunchStartMinuteMax": 14,
+    "LunchEndHour": 13,
+    "LunchEndMinuteMin": 30,
+    "LunchEndMinuteMax": 35,
+    "ActiveDays": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    "StayOpenSeconds": 45,             ← Cycle duration
+    "IntervalMinutes": 5,              ← Cycle frequency
+    "Holidays": ["2026-10-26"],        ← Days off (YYYY-MM-DD format)
+    "Description": "Professional 24/7 Farm"
+}
+
+Edit via: Main Menu → [A] Settings
+
+
+🔐 API ENDPOINTS (Web Server)
+═════════════════════════════════════════════════════════════════════════════
+
+GET  /                        ← Web dashboard
+GET  /api/status              ← Current activity status
+GET  /api/health              ← System health check
+GET  /api/logs                ← Recent activity logs
+GET  /api/config              ← Current configuration
+POST /api/start?mode=standard ← Start activity (requires API key)
+POST /api/stop                ← Stop activity (requires API key)
+
+API Key: Add ?key=YOUR_KEY to protected endpoints
+
+
+🌐 CLOUDFLARE TUNNEL SETUP
+═════════════════════════════════════════════════════════════════════════════
+
+1. Install cloudflared (already in C:\Program Files (x86)\cloudflared\)
+
+2. Authenticate:
+   cloudflared tunnel login
+
+3. Create tunnel:
+   cloudflared tunnel create vscode-cycle
+
+4. Configure C:\Users\%USERNAME%\.cloudflared\config.yml:
+   ---
+   tunnel: YOUR_TUNNEL_UUID
+   credentials-file: C:\Users\%USERNAME%\.cloudflared\UUID.json
+   ingress:
+     - hostname: vscode-cycle.YOUR_DOMAIN.com
+       service: http://localhost:5000
+     - service: http_status:404
+
+5. Run tunnel:
+   cloudflared tunnel run vscode-cycle
+
+6. Access remotely at: https://vscode-cycle.YOUR_DOMAIN.com
+
+
+📊 MONITORING & LOGS
+═════════════════════════════════════════════════════════════════════════════
+
+View Real-Time Logs:
+- Via Web Dashboard: http://localhost:5000/api/logs
+- Via Main Menu: [9] View Logs
+- Via File: C:\Users\%USERNAME%\Scripts\vscode-cycle.log
+
+Status File:
+- Location: C:\Users\%USERNAME%\Scripts\phantom-activity-status.json
+- Contains: Current mode, process ID, start time, uptime
+
+
+🆘 TROUBLESHOOTING
+═════════════════════════════════════════════════════════════════════════════
+
+Issue: "Port 5000 already in use"
+─────────────────────────────────
+Fix 1: Change port in start-system.ps1 -Port 5001
+Fix 2: Find process: netstat -ano | findstr :5000
+Fix 3: Kill process: taskkill /PID <PID> /F
+
+Issue: "Access Denied" errors in web server
+──────────────────────────────────────────
+Fix: Run PowerShell as Administrator
+    Right-click PowerShell → Run as Administrator
+
+Issue: Scripts not running / execution policy error
+──────────────────────────────────────────────
+Fix: Set execution policy:
+    Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser
+
+Issue: Log file encoding error
+──────────────────────────────
+Fix: Already fixed! New UTF-8 log created on startup
+
+Issue: System tray icon not appearing
+─────────────────────────────────────
+Fix: Run Task Scheduler → System → explorer → Properties → Enable auto tray
+
+
+📝 OPERATION MODES
+═════════════════════════════════════════════════════════════════════════════
+
+Quick    (30 sec)  → Single VS Code cycle, minimal activity
+Standard (45 sec)  → Full VS Code cycle, realistic editing simulation
+Extended (60 sec)  → Multiple app simulation (VS Code, Planfix, GitLab)
+Full     (120 sec) → Complete workstation simulation
+
+Always-On Mode:
+- Runs continuously in background
+- Smart time scheduling (respects work hours)
+- Automatic holiday detection
+- Cycle frequency configurable
+
+
+🔧 ADVANCED USAGE
+═════════════════════════════════════════════════════════════════════════════
+
+Run Web Server Only:
+  powershell -ExecutionPolicy Bypass -File start-system.ps1 -WebServerOnly
+
+Run Main Menu Only:
+  powershell -ExecutionPolicy Bypass -File start-system.ps1 -MainMenuOnly
+
+Custom API Key:
+  powershell -ExecutionPolicy Bypass -File start-system.ps1 -ApiKey "my-custom-key-12345"
+
+Custom Port:
+  powershell -ExecutionPolicy Bypass -File start-system.ps1 -Port 8080
+
+
+📞 SUPPORT
+═════════════════════════════════════════════════════════════════════════════
+
+System Files Location:
+- Scripts:  C:\Users\%USERNAME%\Scripts\
+- Config:   C:\Users\%USERNAME%\Scripts\vscode-cycle.config.json
+- Logs:     C:\Users\%USERNAME%\Scripts\vscode-cycle.log
+- Backups:  C:\Users\%USERNAME%\Scripts\backup-encoding-fix-20261023\
+
+Status:
+- Version: 4.1 Fixed
+- Last Updated: 2026-10-23
+- All major issues resolved ✅
+
+
+═════════════════════════════════════════════════════════════════════════════
+System ready for deployment! Start with: start-system.ps1
+═════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,83 @@
+# Phantom Activity - Web Server Restart
+# Stops any running web server instance and starts a fresh one.
+# Run elevated if the existing server was started as administrator.
+
+param(
+    [int]$Port = 5000,
+    [string]$ApiKey = "cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d"
+)
+
+$username = $env:USERNAME
+$scriptsDir = "C:\Users\$username\Scripts"
+$serverScript = "$scriptsDir\phantom-activity-webserver-fixed.ps1"
+
+Write-Host ""
+Write-Host "====================================================================" -ForegroundColor Cyan
+Write-Host "[RESTART] Phantom Activity Web Server" -ForegroundColor Cyan
+Write-Host "====================================================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Stop every PowerShell process that is hosting the web server
+$stopped = 0
+Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" | ForEach-Object {
+    if ($_.CommandLine -and $_.CommandLine -match 'phantom-activity-webserver') {
+        if ($_.ProcessId -ne $PID) {
+            Write-Host "[STOP] Terminating server PID $($_.ProcessId)" -ForegroundColor Yellow
+            Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+            $stopped++
+        }
+    }
+}
+
+# Fall back to whatever currently owns the port
+$conn = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
+foreach ($c in $conn) {
+    if ($c.OwningProcess -gt 4) {
+        $proc = Get-Process -Id $c.OwningProcess -ErrorAction SilentlyContinue
+        if ($proc -and $proc.ProcessName -eq "powershell") {
+            Write-Host "[STOP] Terminating port owner PID $($c.OwningProcess)" -ForegroundColor Yellow
+            Stop-Process -Id $c.OwningProcess -Force -ErrorAction SilentlyContinue
+            $stopped++
+        }
+    }
+}
+
+if ($stopped -eq 0) {
+    Write-Host "[INFO] No running server found" -ForegroundColor Gray
+}
+
+Start-Sleep -Seconds 3
+
+Write-Host "[START] Launching server on port $Port" -ForegroundColor Green
+
+$psArgs = @(
+    "-NoProfile"
+    "-ExecutionPolicy", "Bypass"
+    "-File", $serverScript
+    "-Port", $Port
+    "-ApiKey", $ApiKey
+)
+
+$srv = Start-Process -FilePath "powershell.exe" -ArgumentList $psArgs -PassThru -WindowStyle Hidden
+
+Start-Sleep -Seconds 5
+$srv.Refresh()
+
+if ($srv.HasExited) {
+    Write-Host "[ERROR] Server exited immediately (code $($srv.ExitCode))" -ForegroundColor Red
+} else {
+    Write-Host "[OK] Server running PID $($srv.Id)" -ForegroundColor Green
+}
+
+# Verify over HTTP
+try {
+    $r = Invoke-WebRequest -Uri "http://localhost:$Port/api/health?key=$ApiKey" -UseBasicParsing -TimeoutSec 5
+    Write-Host "[OK] Health check passed: HTTP $($r.StatusCode)" -ForegroundColor Green
+} catch {
+    Write-Host "[ERROR] Health check failed: $($_.Exception.Message)" -ForegroundColor Red
+}
+
+Write-Host ""
+Write-Host "Local URL:  http://localhost:$Port/?key=$ApiKey" -ForegroundColor White
+Write-Host "Remote URL: https://phantom-farm.trycloudflare.me/?key=$ApiKey" -ForegroundColor White
+Write-Host ""

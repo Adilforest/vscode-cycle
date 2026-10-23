@@ -1,0 +1,36 @@
+﻿**********************
+Начало записи сценария Windows PowerShell
+Время начала: 20261023115822
+Имя пользователя: N\ГГГ
+Запуск от имени пользователя: N\ГГГ
+Имя конфигурации: 
+Компьютер: N (Microsoft Windows NT 10.0.26200.0)
+Ведущее приложение: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Start-Transcript -Path 'C:\Users\ГГГ\Scripts\server-start-diag.txt' -Force; & 'C:\Users\ГГГ\Scripts\restart-webserver.ps1'; Stop-Transcript
+ИД процесса: 28900
+PSVersion: 5.1.26100.9168
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9168
+BuildVersion: 10.0.26100.9168
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Транскрибирование запущено, выходной файл C:\Users\ГГГ\Scripts\server-start-diag.txt
+
+====================================================================
+[RESTART] Phantom Activity Web Server
+====================================================================
+
+[STOP] Terminating server PID 19960
+[START] Launching server on port 5000
+[OK] Server running PID 11728
+[OK] Health check passed: HTTP 200
+
+Local URL:  http://localhost:5000/?key=cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d
+Remote URL: https://phantom-farm.trycloudflare.me/?key=cfat_Akd9sK2lP9mX1Qw5rT8yU3vW6zB4cN7d
+
+**********************
+Конец записи протокола Windows PowerShell
+Время окончания: 20261023115832
+**********************

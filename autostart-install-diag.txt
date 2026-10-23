@@ -1,0 +1,47 @@
+﻿**********************
+Начало записи сценария Windows PowerShell
+Время начала: 20261023123510
+Имя пользователя: N\ГГГ
+Запуск от имени пользователя: N\ГГГ
+Имя конфигурации: 
+Компьютер: N (Microsoft Windows NT 10.0.26200.0)
+Ведущее приложение: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -Command Start-Transcript -Path 'C:\Users\ГГГ\Scripts\autostart-install-diag.txt' -Force; & 'C:\Users\ГГГ\Scripts\install-autostart.ps1'; Stop-Transcript
+ИД процесса: 25144
+PSVersion: 5.1.26100.9168
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9168
+BuildVersion: 10.0.26100.9168
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Транскрибирование запущено, выходной файл C:\Users\ГГГ\Scripts\autostart-install-diag.txt
+
+====================================================================
+[SETUP] Phantom Activity - Autostart Installation
+====================================================================
+
+[TASK] PhantomActivity-WebServer
+  [OK] Registered (elevated=True, delay=PT15S)
+[TASK] PhantomActivity-Tunnel
+  [OK] Registered (elevated=False, delay=PT45S)
+
+[OK] Autostart installed
+
+Tasks will run at every logon:
+  PhantomActivity-WebServer  (after 15 seconds, elevated)
+  PhantomActivity-Tunnel     (after 45 seconds)
+
+Manage them with:
+  Get-ScheduledTask -TaskName PhantomActivity-*
+  Start-ScheduledTask -TaskName PhantomActivity-WebServer
+  Unregister-ScheduledTask -TaskName PhantomActivity-WebServer
+
+The remote URL is always written to:
+  C:\Users\ГГГ\Scripts\remote-url.txt
+
+**********************
+Конец записи протокола Windows PowerShell
+Время окончания: 20261023123516
+**********************

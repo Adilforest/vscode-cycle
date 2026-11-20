@@ -1,110 +1,82 @@
-param(
-    [int]$CycleDurationSeconds = 120
+﻿param(
+    [int]$CycleDurationSeconds = 120,
+    [int]$CloseAfterSeconds = 6
 )
 
+# Shared helpers: isolated launchers, owned-item tracking, memory valve, sweep.
 Add-Type -AssemblyName System.Windows.Forms
+. "$PSScriptRoot\phantom-activity-common.ps1"
 
 $username = $env:USERNAME
-$codeExe = "C:\Users\$username\AppData\Local\Programs\Microsoft VS Code\Code.exe"
-$logFile = "C:\Users\$username\Scripts\vscode-cycle.log"
+$projectPath = "C:\Users\$username\Desktop\situation-centre-arm-backend"
+$planfixUrl  = "https://robosoft.planfix.com/planner/706"
+$gitlabUrl   = "https://gitlab.robosoft.kz/robosoft/situation-centre-arm-backend"
 
-$projectPath = "C:\Users\ГГГ\Desktop\situation-centre-arm-backend"
-$planfixUrl = "https://robosoft.planfix.com/planner/706"
-$gitlabUrl = "https://gitlab.robosoft.kz/robosoft/situation-centre-arm-backend"
+Write-CycleLog ""
+Write-CycleLog "================================================================="
+Write-CycleLog "OPTIMIZED VISIBLE CYCLE (isolated profiles) - 10s apps, 2s actions"
+Write-CycleLog "================================================================="
 
-function Write-Log {
-    param([string]$Message)
-    $line = "{0}  {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Message
-    Add-Content -Path $logFile -Value $line -ErrorAction SilentlyContinue
-}
+# Clear any orphan the previous (possibly crashed) run may have left behind.
+Invoke-StartupSweep
 
-function Simulate-Action {
-    try {
-        # Random mouse movement
-        $x = [System.Windows.Forms.Cursor]::Position.X
-        $y = [System.Windows.Forms.Cursor]::Position.Y
-        [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point($x + 3, $y + 3)
-        Start-Sleep -Milliseconds 50
-        [System.Windows.Forms.Cursor]::Position = New-Object System.Drawing.Point($x, $y)
-
-        # Random key press
-        [System.Windows.Forms.SendKeys]::SendWait("{F5}")
-        Start-Sleep -Milliseconds 100
-    } catch {
-        Write-Log "Action skipped: $_"
-    }
-}
-
-Write-Log ""
-Write-Log "═════════════════════════════════════════════════════════════════"
-Write-Log "🚀 OPTIMIZED VISIBLE CYCLE - 10s apps, 5s actions, 2min cleanup"
-Write-Log "═════════════════════════════════════════════════════════════════"
-Write-Log ""
-
-$startTime = Get-Date
-$endTime = $startTime.AddSeconds($CycleDurationSeconds)
-$lastAppOpen = $null
-$appIndex = 0
 $apps = @(
-    @{ Name = "VS Code"; Action = { Start-Process -FilePath $codeExe -ArgumentList $projectPath -WindowStyle Normal } },
-    @{ Name = "Planfix"; Action = { Start-Process $planfixUrl } },
-    @{ Name = "GitLab"; Action = { Start-Process $gitlabUrl } },
-    @{ Name = "Terminal"; Action = { Start-Process "powershell.exe" -ArgumentList "-NoExit" -WindowStyle Normal } }
+    @{ Name = "VS Code";  Action = { Open-PhantomVsCode $projectPath } },
+    @{ Name = "Planfix";  Action = { Open-PhantomUrl $planfixUrl } },
+    @{ Name = "GitLab";   Action = { Open-PhantomUrl $gitlabUrl } },
+    @{ Name = "Terminal"; Action = { Open-PhantomTerminal } }
 )
 
+$startTime = Get-Date
+$endTime   = $startTime.AddSeconds($CycleDurationSeconds)
+$appIndex  = 0
 $lastActionTime = $startTime
-$lastAppTime = $startTime
+$lastAppTime    = $startTime
+$aborted = $false
 
-while ((Get-Date) -lt $endTime) {
-    $now = Get-Date
+try {
+    while ((Get-Date) -lt $endTime) {
+        $now = Get-Date
 
-    # Every 2-3 seconds: perform action (more frequent for Manic Time)
-    if (($now - $lastActionTime).TotalSeconds -ge 2) {
-        Write-Log "  Action: key press + mouse move"
-        Simulate-Action
-        $lastActionTime = $now
-    }
-
-    # Every 10 seconds: open next app
-    if (($now - $lastAppTime).TotalSeconds -ge 10) {
-        $app = $apps[$appIndex % $apps.Count]
-        Write-Log "Opening: $($app.Name)"
-        try {
-            & $app.Action
-            Write-Log "  ✅ $($app.Name) opened"
-        } catch {
-            Write-Log "  ❌ Error: $_"
+        # Every 2s: a keystroke + mouse nudge so Manic Time counts activity.
+        if (($now - $lastActionTime).TotalSeconds -ge 2) {
+            Invoke-SimulatedAction
+            $lastActionTime = $now
         }
-        $appIndex++
-        $lastAppTime = $now
+
+        # Every 10s: open the next app in the rotation.
+        if (($now - $lastAppTime).TotalSeconds -ge 10) {
+            $app = $apps[$appIndex % $apps.Count]
+            Write-CycleLog "Opening: $($app.Name)"
+            try { & $app.Action; Write-CycleLog "  OK $($app.Name)" }
+            catch { Write-CycleLog "  ERR $($app.Name): $_" }
+            $appIndex++
+            $lastAppTime = $now
+        }
+
+        # A detection miss must never snowball: if too many items are tracked,
+        # force-close the lot now instead of waiting for StayOpen to elapse.
+        if ($PhantomOwned.Count -gt 8) { Close-Owned 0 }
+
+        # Routine close of items that have been open long enough.
+        Close-Owned $CloseAfterSeconds
+
+        # Memory safety valve: below the floor, stop opening anything, tear down
+        # and signal the always-on loop to stop as well.
+        if (Test-MemoryCritical) {
+            Write-CycleLog "[CRITICAL] Low memory ($(Get-MemFreeMB) MB free) - aborting cycle and stopping"
+            New-Item -ItemType File -Path $PhantomStopFlag -Force | Out-Null
+            $aborted = $true
+            break
+        }
+
+        Start-Sleep -Milliseconds 500
     }
-
-    Start-Sleep -Milliseconds 500
 }
-
-# After 2 minutes: Close ALL applications
-Write-Log ""
-Write-Log "═════════════════════════════════════════════════════════════════"
-Write-Log "🧹 CLEANUP: Closing all 4 applications after 2 minutes"
-Write-Log "═════════════════════════════════════════════════════════════════"
-Write-Log ""
-
-# Close VS Code
-Write-Log "Closing VS Code..."
-Get-Process "Code" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-
-# Close Chrome/Edge
-Write-Log "Closing browser (Planfix/GitLab)..."
-Get-Process "chrome" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-Get-Process "msedge" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-
-# Close Terminal (PowerShell instances except current)
-Write-Log "Closing Terminal..."
-Get-Process "powershell" -ErrorAction SilentlyContinue | Where-Object { $_.Id -ne $PID } | Stop-Process -Force -ErrorAction SilentlyContinue
-
-Start-Sleep -Seconds 1
-
-Write-Log ""
-Write-Log "✅ VISIBLE CYCLE COMPLETED - All applications closed"
-Write-Log "Memory freed: All windows, tabs, and processes"
-Write-Log ""
+finally {
+    # Runs even on error: close exactly what this cycle opened and guarantee the
+    # isolated trees are gone so nothing is left occupying memory.
+    Invoke-PhantomCleanup
+    Write-CycleLog ("VISIBLE CYCLE DONE - cleaned up" + $(if ($aborted) { " (memory abort)" } else { "" }))
+    Write-CycleLog ""
+}

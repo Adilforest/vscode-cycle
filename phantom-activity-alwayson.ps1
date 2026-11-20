@@ -14,6 +14,9 @@ $scriptsDir = "C:\Users\$username\Scripts"
 $configFile = "$scriptsDir\vscode-cycle.config.json"
 $logFile = "$scriptsDir\vscode-cycle.log"
 
+# Shared helpers: isolated teardown, memory valve, startup sweep, stop flag.
+. "$PSScriptRoot\phantom-activity-common.ps1"
+
 function Write-Log {
     param([string]$Message, [string]$Color = "White")
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -57,17 +60,7 @@ function Is-WorkingHours {
     $now = Get-Date
     $dayOfWeek = $now.DayOfWeek.ToString()
 
-    # Check if active day
-    if ($cfg.ActiveDays -notcontains $dayOfWeek) { return $false }
-
-    # Check if holiday
-    $todayStr = $now.ToString("yyyy-MM-dd")
-    if ($cfg.Holidays -contains $todayStr) { return $false }
-
-    # Check if working hours
-    $hour = $now.Hour
-    $minute = $now.Minute
-    $timeInMinutes = $hour * 60 + $minute
+    $timeInMinutes = $now.Hour * 60 + $now.Minute
 
     $startHour = $cfg.ActiveStartHour
     $startMin = $cfg.ActiveStartMinuteMin
@@ -79,7 +72,27 @@ function Is-WorkingHours {
     # script then refused as "after work end".
     $endTime = [int]$cfg.ActiveEndHour * 60 + [int]$cfg.ActiveEndMinuteMax
 
-    return ($timeInMinutes -ge $startTime -and $timeInMinutes -lt $endTime)
+    # The day whose schedule applies. A window that ends before it starts runs
+    # overnight (e.g. 21:00 to 13:58 next day); the part after midnight belongs
+    # to the day the window began.
+    $anchor = $now
+    if ($endTime -gt $startTime) {
+        if ($timeInMinutes -lt $startTime -or $timeInMinutes -ge $endTime) { return $false }
+    } elseif ($timeInMinutes -ge $startTime) {
+        # evening part: today
+    } elseif ($timeInMinutes -lt $endTime) {
+        $anchor = $now.AddDays(-1)
+    } else {
+        return $false
+    }
+
+    # Check if active day
+    if ($cfg.ActiveDays -notcontains $anchor.DayOfWeek.ToString()) { return $false }
+
+    # Check if holiday
+    if ($cfg.Holidays -contains $anchor.ToString("yyyy-MM-dd")) { return $false }
+
+    return $true
 }
 
 function Is-LunchBreak {
@@ -103,10 +116,10 @@ function Run-PhantomCycle {
     try {
         if ($UseExtended) {
             Write-Log "[RUN] Running EXTENDED cycle..." "Green"
-            & "$scriptsDir\vscode-cycle-extended.ps1"
+            & "$scriptsDir\vscode-cycle-extended-optimized.ps1"
         } else {
             Write-Log "[RUN] Running STANDARD cycle..." "Green"
-            & "$scriptsDir\vscode-cycle.ps1"
+            & "$scriptsDir\vscode-cycle-visible-optimized.ps1"
         }
         Write-Log "[OK] Cycle completed successfully" "Green"
         return $true
@@ -149,11 +162,16 @@ function Show-Status {
     Write-Log "=============================================" "Cyan"
     Write-Log "Status: $status" "Yellow"
     Write-Log "Time: $($now.ToString('HH:mm:ss')) | Day: $($now.DayOfWeek)" "White"
-    Write-Log "Mode: $(if($UseExtended) { 'EXTENDED (4 apps)' } else { 'STANDARD (VS Code)' })" "White"
+    Write-Log "Mode: $(if($UseExtended) { 'EXTENDED (4 apps)' } else { 'STANDARD (4 apps)' })" "White"
     Write-Log "=============================================" "Cyan"
 }
 
 Write-Log "[START] ALWAYS-ON MODE STARTED" "Green"
+
+# Clear any leftover from a previous run and a stale stop flag before starting.
+Invoke-StartupSweep
+Remove-Item $PhantomStopFlag -Force -ErrorAction SilentlyContinue
+
 Show-Status
 
 $cycleCount = 0
@@ -161,6 +179,15 @@ $successCount = 0
 $startTime = Get-Date
 
 while ($true) {
+    # Memory safety valve: if free RAM has fallen below the floor, do not start
+    # another cycle. Tear down anything still open and stop the loop entirely so
+    # the farm gets its memory back (this is what failed to happen before).
+    if (Test-MemoryCritical) {
+        Write-Log "[CRITICAL] Low memory ($(Get-MemFreeMB) MB free) - stopping always-on mode to protect the farm" "Red"
+        Invoke-PhantomCleanup
+        break
+    }
+
     $interval = Get-SmartInterval
     $nextRun = (Get-Date).AddMinutes($interval)
 
@@ -176,26 +203,22 @@ while ($true) {
         $success = Run-PhantomCycle
         if ($success) { $successCount++ }
 
-        # Smart memory cleanup: only close browser if memory is too high
-        try {
-            $browsers = @("chrome", "msedge", "firefox", "iexplore")
-            $totalMemory = 0
+        # A cycle that hit the memory floor drops this flag; honour it and stop.
+        if (Test-Path $PhantomStopFlag) {
+            Write-Log "[CRITICAL] Cycle aborted on low memory ($(Get-MemFreeMB) MB free) - stopping always-on mode" "Red"
+            Remove-Item $PhantomStopFlag -Force -ErrorAction SilentlyContinue
+            Invoke-PhantomCleanup
+            break
+        }
 
-            foreach ($browser in $browsers) {
-                $procs = Get-Process -Name $browser -ErrorAction SilentlyContinue
-                if ($procs) {
-                    $memoryMB = ($procs | Measure-Object -Property WorkingSet -Sum).Sum / 1MB
-                    $totalMemory += $memoryMB
-                }
+        # Record free RAM each cycle so the trend is visible in the log; warn as
+        # it approaches the floor, before the hard stop has to trigger.
+        $free = Get-MemFreeMB
+        if ($null -ne $free) {
+            $t = Get-MemThresholds
+            if ($free -lt $t.WarnFree) {
+                Write-Log "[MEM] Free RAM low: $free MB (warn <$($t.WarnFree), stop <$($t.StopFree))" "Yellow"
             }
-
-            # Memory monitoring only - NO auto-closing to protect other profiles
-            if ($totalMemory -gt 800) {
-                Write-Log "[MEM] Browser memory high ($([math]::Round($totalMemory, 2)) MB) - close tabs manually if needed" "Yellow"
-                Write-Log "[MEM] Not auto-closing to protect other Chrome profiles" "DarkGray"
-            }
-        } catch {
-            # Ignore memory check errors
         }
     } else {
         Write-Log "[SKIP] Skipping cycle - off hours" "DarkGray"
@@ -216,6 +239,9 @@ while ($true) {
     $wakeAt = (Get-Date).AddMinutes($interval)
     while ((Get-Date) -lt $wakeAt) {
         Start-Sleep -Seconds 30
+        # Wake immediately if memory has become critical, so the top-of-loop
+        # check can stop the loop instead of waiting out the whole interval.
+        if (Test-MemoryCritical) { break }
         if ((Get-ConfigStamp) -ne $configStamp) {
             Write-Log "[CONFIG] Settings changed - re-checking the schedule" "Cyan"
             break
@@ -227,3 +253,8 @@ while ($true) {
         }
     }
 }
+
+# Reached only when the loop stops (currently: the memory safety valve). Make a
+# final sweep so nothing the phantom opened is left occupying memory.
+Invoke-PhantomCleanup
+Write-Log "[STOP] Always-on mode ended - all phantom windows/processes cleaned up" "Yellow"

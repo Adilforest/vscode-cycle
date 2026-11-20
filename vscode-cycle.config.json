@@ -1,17 +1,17 @@
 ﻿{
     "Enabled":  true,
     "ActiveStartHour":  8,
-    "ActiveStartMinuteMin":  27,
-    "ActiveStartMinuteMax":  27,
-    "ActiveEndHour":  19,
+    "ActiveStartMinuteMin":  47,
+    "ActiveStartMinuteMax":  47,
+    "ActiveEndHour":  18,
     "ActiveEndMinuteMin":  58,
     "ActiveEndMinuteMax":  58,
     "LunchStartHour":  13,
     "LunchStartMinuteMin":  0,
     "LunchStartMinuteMax":  0,
     "LunchEndHour":  13,
-    "LunchEndMinuteMin":  35,
-    "LunchEndMinuteMax":  35,
+    "LunchEndMinuteMin":  1,
+    "LunchEndMinuteMax":  1,
     "ActiveDays":  [
                        "Monday",
                        "Tuesday",
@@ -21,8 +21,10 @@
                    ],
     "StayOpenSeconds":  5,
     "IntervalMinutes":  1,
+    "MemoryStopFreeMB":  1200,
+    "MemoryWarnFreeMB":  2000,
     "Holidays":  [
-                     "2026-10-26"
+
                  ],
     "Description":  "Professional 24/7 Farm - Holidays: Add dates in YYYY-MM-DD format"
 }

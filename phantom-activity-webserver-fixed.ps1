@@ -183,10 +183,14 @@ function Stop-Activity {
             Write-Log "[STOP] PID $($status.ProcessId) is no longer the activity - left untouched"
         }
 
-        # A cycle may have been mid-way; close its isolated VS Code as the cycle would
-        Get-CimInstance Win32_Process -Filter "Name='Code.exe'" -ErrorAction SilentlyContinue |
-            Where-Object { $_.CommandLine -like "*.vscode-cycle-isolated*" } |
-            ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+        # A cycle may have been mid-way; close its isolated VS Code and isolated
+        # Chrome as the cycle would. Both live under .vscode-cycle-isolated, so the
+        # farm's own Chrome (default profile) is never matched and never touched.
+        foreach ($procName in @("Code.exe", "chrome.exe")) {
+            Get-CimInstance Win32_Process -Filter "Name='$procName'" -ErrorAction SilentlyContinue |
+                Where-Object { $_.CommandLine -like "*.vscode-cycle-isolated*" } |
+                ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+        }
 
         $script:statusObject.Status = "stopped"
         $script:statusObject.Mode = "none"
@@ -563,12 +567,21 @@ while ($true) {
                     $now = Get-Date
                     $nowMin = $now.Hour * 60 + $now.Minute
 
-                    $isActiveDay = @($cfg.ActiveDays) -contains $now.DayOfWeek.ToString()
-                    $isHoliday = @($cfg.Holidays) -contains $now.ToString("yyyy-MM-dd")
-                    $enabled = Test-ScheduleEnabled $cfg
-
                     $win = Get-EffectiveSchedule $cfg
-                    $inWork = ($nowMin -ge $win.WorkStart -and $nowMin -lt $win.WorkEnd)
+
+                    # A window that ends before it starts runs overnight; its part after
+                    # midnight belongs to the day the window began
+                    $overnight = $win.WorkEnd -lt $win.WorkStart
+                    if ($overnight) {
+                        $inWork = ($nowMin -ge $win.WorkStart -or $nowMin -lt $win.WorkEnd)
+                    } else {
+                        $inWork = ($nowMin -ge $win.WorkStart -and $nowMin -lt $win.WorkEnd)
+                    }
+                    $anchor = if ($overnight -and $nowMin -lt $win.WorkEnd) { $now.AddDays(-1) } else { $now }
+
+                    $isActiveDay = @($cfg.ActiveDays) -contains $anchor.DayOfWeek.ToString()
+                    $isHoliday = @($cfg.Holidays) -contains $anchor.ToString("yyyy-MM-dd")
+                    $enabled = Test-ScheduleEnabled $cfg
                     $inLunch = ($nowMin -ge $win.LunchStart -and $nowMin -lt $win.LunchEnd)
 
                     $phase = "off-hours"

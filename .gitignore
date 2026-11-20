@@ -3,3 +3,6 @@
 phantom-child-error.log
 tunnel.log
 backup-encoding-fix-*/
+backup-mem-fix-*/
+phantom-owned.json
+phantom-STOP.flag
